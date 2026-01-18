@@ -40,6 +40,8 @@ import { Separator } from '@/components/ui/separator';
 import { PageHeader } from '@/components/common';
 import { cn } from '@/lib/utils';
 
+import { mockHotelSettings } from '@/data/mockData';
+
 /**
  * AdminSettingsPage component
  */
@@ -47,18 +49,18 @@ export default function AdminSettingsPage() {
   // State
   const [isSaving, setIsSaving] = React.useState(false);
   const [activeTab, setActiveTab] = React.useState('general');
-  
+
   // Form states
-  const [hotelName, setHotelName] = React.useState('Grand Hotel Nepal');
-  const [hotelEmail, setHotelEmail] = React.useState('info@grandhotelnepal.com');
-  const [hotelPhone, setHotelPhone] = React.useState('+977-1-4567890');
-  const [hotelAddress, setHotelAddress] = React.useState('Durbar Marg, Kathmandu, Nepal');
-  const [checkInTime, setCheckInTime] = React.useState('14:00');
-  const [checkOutTime, setCheckOutTime] = React.useState('12:00');
-  const [currency, setCurrency] = React.useState('NPR');
-  const [timezone, setTimezone] = React.useState('Asia/Kathmandu');
+  const [hotelName, setHotelName] = React.useState(mockHotelSettings.name);
+  const [hotelEmail, setHotelEmail] = React.useState(mockHotelSettings.email);
+  const [hotelPhone, setHotelPhone] = React.useState(mockHotelSettings.phone);
+  const [hotelAddress, setHotelAddress] = React.useState(mockHotelSettings.address);
+  const [checkInTime, setCheckInTime] = React.useState(mockHotelSettings.checkInTime);
+  const [checkOutTime, setCheckOutTime] = React.useState(mockHotelSettings.checkOutTime);
+  const [currency, setCurrency] = React.useState(mockHotelSettings.currency);
+  const [timezone, setTimezone] = React.useState(mockHotelSettings.timezone);
   const [language, setLanguage] = React.useState('en');
-  
+
   // Notification settings
   const [emailNotifications, setEmailNotifications] = React.useState(true);
   const [smsNotifications, setSmsNotifications] = React.useState(false);
@@ -66,13 +68,13 @@ export default function AdminSettingsPage() {
   const [cancellationAlert, setCancellationAlert] = React.useState(true);
   const [lowInventoryAlert, setLowInventoryAlert] = React.useState(true);
   const [reviewAlert, setReviewAlert] = React.useState(true);
-  
+
   // Payment settings
   const [esewaEnabled, setEsewaEnabled] = React.useState(true);
   const [khaltiEnabled, setKhaltiEnabled] = React.useState(true);
   const [cardEnabled, setCardEnabled] = React.useState(true);
   const [cashEnabled, setCashEnabled] = React.useState(true);
-  
+
   // Handle save
   const handleSave = async () => {
     setIsSaving(true);
@@ -442,7 +444,7 @@ export default function AdminSettingsPage() {
                   onCheckedChange={setEsewaEnabled}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">
@@ -460,7 +462,7 @@ export default function AdminSettingsPage() {
                   onCheckedChange={setKhaltiEnabled}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
@@ -478,7 +480,7 @@ export default function AdminSettingsPage() {
                   onCheckedChange={setCardEnabled}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -632,7 +634,7 @@ export default function AdminSettingsPage() {
                 </div>
                 <Badge variant="success">Connected</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-orange-100 flex items-center justify-center">
@@ -647,7 +649,7 @@ export default function AdminSettingsPage() {
                 </div>
                 <Button variant="outline" size="sm">Connect</Button>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
@@ -662,7 +664,7 @@ export default function AdminSettingsPage() {
                 </div>
                 <Badge variant="success">Connected</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-lg bg-purple-100 flex items-center justify-center">

@@ -12,12 +12,13 @@ const alertVariants = cva(
         default: "bg-background text-foreground",
         destructive:
           "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+        // Strict Palette Mapping
         success:
-          "border-green-500/50 bg-green-50 text-green-700 dark:border-green-500 dark:bg-green-950 dark:text-green-400 [&>svg]:text-green-600 dark:[&>svg]:text-green-400",
+          "border-primary/20 bg-primary/5 text-primary [&>svg]:text-primary", // Royal Blue
         warning:
-          "border-yellow-500/50 bg-yellow-50 text-yellow-700 dark:border-yellow-500 dark:bg-yellow-950 dark:text-yellow-400 [&>svg]:text-yellow-600 dark:[&>svg]:text-yellow-400",
+          "border-accent/20 bg-accent/5 text-accent-foreground [&>svg]:text-accent", // Gold
         info:
-          "border-blue-500/50 bg-blue-50 text-blue-700 dark:border-blue-500 dark:bg-blue-950 dark:text-blue-400 [&>svg]:text-blue-600 dark:[&>svg]:text-blue-400",
+          "border-primary/20 bg-primary/5 text-primary [&>svg]:text-primary", // Royal Blue
       },
     },
     defaultVariants: {

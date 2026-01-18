@@ -12,13 +12,11 @@ import {
     TrendingUp,
     TrendingDown,
     ArrowRight,
-    Clock,
-    CheckCircle,
-    AlertCircle,
-    XCircle,
     ChefHat,
     Star,
+    CheckCircle,
     BarChart3,
+    LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,151 +25,22 @@ import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import {
+    mockManagerStats,
+    mockRoomAvailability,
+    mockRecentBookings,
+    mockPendingOrders,
+    mockTodayActivity,
+    mockHousekeepingTasks
+} from '@/data/mockData';
 
-/**
- * Stats card data
- */
-const statsData = [
-    {
-        title: 'Total Bookings',
-        value: '156',
-        change: '+12.5%',
-        changeType: 'positive' as const,
-        icon: Calendar,
-        description: 'This month',
-    },
-    {
-        title: 'Occupancy Rate',
-        value: '78%',
-        change: '+5.2%',
-        changeType: 'positive' as const,
-        icon: BedDouble,
-        description: 'Current',
-    },
-    {
-        title: 'Revenue',
-        value: 'NPR 2.4M',
-        change: '+18.3%',
-        changeType: 'positive' as const,
-        icon: DollarSign,
-        description: 'This month',
-    },
-    {
-        title: 'Total Guests',
-        value: '324',
-        change: '-2.1%',
-        changeType: 'negative' as const,
-        icon: Users,
-        description: 'This month',
-    },
-];
-
-/**
- * Room availability data
- */
-const roomAvailability = {
-    total: 50,
-    occupied: 39,
-    available: 8,
-    maintenance: 3,
+// Icon mapping for stats
+const iconMap: Record<string, LucideIcon> = {
+    'Calendar': Calendar,
+    'BedDouble': BedDouble,
+    'DollarSign': DollarSign,
+    'Users': Users,
 };
-
-/**
- * Recent bookings data
- */
-const recentBookings = [
-    {
-        id: '1',
-        guest: 'Ramesh Sharma',
-        room: 'Deluxe Suite 305',
-        checkIn: '2024-01-20',
-        checkOut: '2024-01-23',
-        status: 'confirmed',
-        amount: 54000,
-    },
-    {
-        id: '2',
-        guest: 'Sarah Johnson',
-        room: 'Executive Room 201',
-        checkIn: '2024-01-21',
-        checkOut: '2024-01-24',
-        status: 'pending',
-        amount: 36000,
-    },
-    {
-        id: '3',
-        guest: 'Priya Patel',
-        room: 'Standard Room 102',
-        checkIn: '2024-01-20',
-        checkOut: '2024-01-21',
-        status: 'checked-in',
-        amount: 8000,
-    },
-    {
-        id: '4',
-        guest: 'John Smith',
-        room: 'Presidential Suite',
-        checkIn: '2024-01-22',
-        checkOut: '2024-01-28',
-        status: 'confirmed',
-        amount: 270000,
-    },
-];
-
-/**
- * Pending orders data
- */
-const pendingOrders = [
-    {
-        id: 'ORD001',
-        items: 'Dal Bhat Set, Momo (2)',
-        room: '305',
-        time: '5 min ago',
-        total: 910,
-        status: 'preparing',
-    },
-    {
-        id: 'ORD002',
-        items: 'Butter Chicken, Naan (2)',
-        room: '201',
-        time: '8 min ago',
-        total: 650,
-        status: 'pending',
-    },
-    {
-        id: 'ORD003',
-        items: 'English Breakfast',
-        room: '102',
-        time: '12 min ago',
-        total: 550,
-        status: 'preparing',
-    },
-];
-
-/**
- * Today's arrivals/departures
- */
-const todayActivity = {
-    arrivals: [
-        { guest: 'Mike Wilson', room: '401', time: '14:00' },
-        { guest: 'Emma Brown', room: '208', time: '15:30' },
-        { guest: 'David Lee', room: '312', time: '16:00' },
-    ],
-    departures: [
-        { guest: 'Lisa Chen', room: '105', time: '10:00' },
-        { guest: 'Tom Harris', room: '209', time: '11:00' },
-    ],
-};
-
-/**
- * Housekeeping tasks
- */
-const housekeepingTasks = [
-    { room: '105', type: 'Checkout Clean', priority: 'high', assignee: 'Maya' },
-    { room: '209', type: 'Checkout Clean', priority: 'high', assignee: 'Rita' },
-    { room: '303', type: 'Touch-up', priority: 'medium', assignee: 'Sita' },
-    { room: '107', type: 'Deep Clean', priority: 'low', assignee: 'Maya' },
-];
 
 /**
  * Booking status badge config
@@ -220,32 +89,35 @@ export default function ManagerDashboard() {
 
             {/* Stats Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {statsData.map((stat) => (
-                    <Card key={stat.title}>
-                        <CardContent className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                                    <stat.icon className="h-5 w-5 text-primary" />
+                {mockManagerStats.map((stat) => {
+                    const Icon = iconMap[stat.iconName] || Calendar;
+                    return (
+                        <Card key={stat.title}>
+                            <CardContent className="p-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                        <Icon className="h-5 w-5 text-primary" />
+                                    </div>
+                                    <Badge
+                                        variant={stat.changeType === 'positive' ? 'success' : 'destructive'}
+                                        className="h-6"
+                                    >
+                                        {stat.changeType === 'positive' ? (
+                                            <TrendingUp className="h-3 w-3 mr-1" />
+                                        ) : (
+                                            <TrendingDown className="h-3 w-3 mr-1" />
+                                        )}
+                                        {stat.change}
+                                    </Badge>
                                 </div>
-                                <Badge
-                                    variant={stat.changeType === 'positive' ? 'success' : 'destructive'}
-                                    className="h-6"
-                                >
-                                    {stat.changeType === 'positive' ? (
-                                        <TrendingUp className="h-3 w-3 mr-1" />
-                                    ) : (
-                                        <TrendingDown className="h-3 w-3 mr-1" />
-                                    )}
-                                    {stat.change}
-                                </Badge>
-                            </div>
-                            <div className="mt-4">
-                                <p className="text-2xl font-bold">{stat.value}</p>
-                                <p className="text-sm text-muted-foreground">{stat.title}</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
+                                <div className="mt-4">
+                                    <p className="text-2xl font-bold">{stat.value}</p>
+                                    <p className="text-sm text-muted-foreground">{stat.title}</p>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
 
             <div className="grid gap-6 lg:grid-cols-3">
@@ -259,25 +131,25 @@ export default function ManagerDashboard() {
                         <div className="flex justify-between text-sm">
                             <span>Occupancy Rate</span>
                             <span className="font-medium">
-                                {Math.round((roomAvailability.occupied / roomAvailability.total) * 100)}%
+                                {Math.round((mockRoomAvailability.occupied / mockRoomAvailability.total) * 100)}%
                             </span>
                         </div>
                         <Progress
-                            value={(roomAvailability.occupied / roomAvailability.total) * 100}
+                            value={(mockRoomAvailability.occupied / mockRoomAvailability.total) * 100}
                             className="h-3"
                         />
 
                         <div className="grid grid-cols-3 gap-4 pt-4">
                             <div className="text-center p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-                                <p className="text-2xl font-bold text-green-600">{roomAvailability.available}</p>
+                                <p className="text-2xl font-bold text-green-600">{mockRoomAvailability.available}</p>
                                 <p className="text-xs text-muted-foreground">Available</p>
                             </div>
                             <div className="text-center p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                                <p className="text-2xl font-bold text-blue-600">{roomAvailability.occupied}</p>
+                                <p className="text-2xl font-bold text-blue-600">{mockRoomAvailability.occupied}</p>
                                 <p className="text-xs text-muted-foreground">Occupied</p>
                             </div>
                             <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg">
-                                <p className="text-2xl font-bold text-yellow-600">{roomAvailability.maintenance}</p>
+                                <p className="text-2xl font-bold text-yellow-600">{mockRoomAvailability.maintenance}</p>
                                 <p className="text-xs text-muted-foreground">Maintenance</p>
                             </div>
                         </div>
@@ -301,25 +173,25 @@ export default function ManagerDashboard() {
                         <Tabs defaultValue="arrivals">
                             <TabsList className="w-full">
                                 <TabsTrigger value="arrivals" className="flex-1">
-                                    Arrivals ({todayActivity.arrivals.length})
+                                    Arrivals ({mockTodayActivity.arrivals.length})
                                 </TabsTrigger>
                                 <TabsTrigger value="departures" className="flex-1">
-                                    Departures ({todayActivity.departures.length})
+                                    Departures ({mockTodayActivity.departures.length})
                                 </TabsTrigger>
                             </TabsList>
 
                             <TabsContent value="arrivals" className="mt-4 space-y-3">
-                                {todayActivity.arrivals.map((arrival, idx) => (
+                                {mockTodayActivity.arrivals.map((arrival, idx) => (
                                     <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-8 w-8">
                                                 <AvatarFallback className="text-xs">
-                                                    {arrival.guest.split(' ').map((n) => n[0]).join('')}
+                                                    {arrival.guestName.split(' ').map((n) => n[0]).join('')}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <p className="font-medium text-sm">{arrival.guest}</p>
-                                                <p className="text-xs text-muted-foreground">Room {arrival.room}</p>
+                                                <p className="font-medium text-sm">{arrival.guestName}</p>
+                                                <p className="text-xs text-muted-foreground">Room {arrival.roomNumber}</p>
                                             </div>
                                         </div>
                                         <Badge variant="outline">{arrival.time}</Badge>
@@ -328,17 +200,17 @@ export default function ManagerDashboard() {
                             </TabsContent>
 
                             <TabsContent value="departures" className="mt-4 space-y-3">
-                                {todayActivity.departures.map((departure, idx) => (
+                                {mockTodayActivity.departures.map((departure, idx) => (
                                     <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-8 w-8">
                                                 <AvatarFallback className="text-xs">
-                                                    {departure.guest.split(' ').map((n) => n[0]).join('')}
+                                                    {departure.guestName.split(' ').map((n) => n[0]).join('')}
                                                 </AvatarFallback>
                                             </Avatar>
                                             <div>
-                                                <p className="font-medium text-sm">{departure.guest}</p>
-                                                <p className="text-xs text-muted-foreground">Room {departure.room}</p>
+                                                <p className="font-medium text-sm">{departure.guestName}</p>
+                                                <p className="text-xs text-muted-foreground">Room {departure.roomNumber}</p>
                                             </div>
                                         </div>
                                         <Badge variant="outline">{departure.time}</Badge>
@@ -354,12 +226,12 @@ export default function ManagerDashboard() {
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div>
                             <CardTitle>Kitchen Orders</CardTitle>
-                            <CardDescription>{pendingOrders.length} pending orders</CardDescription>
+                            <CardDescription>{mockPendingOrders.length} pending orders</CardDescription>
                         </div>
                         <ChefHat className="h-5 w-5 text-muted-foreground" />
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        {pendingOrders.map((order) => (
+                        {mockPendingOrders.map((order) => (
                             <div key={order.id} className="p-3 border rounded-lg">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="font-mono text-sm">{order.id}</span>
@@ -369,7 +241,7 @@ export default function ManagerDashboard() {
                                 </div>
                                 <p className="text-sm font-medium">{order.items}</p>
                                 <div className="flex items-center justify-between mt-2 text-sm text-muted-foreground">
-                                    <span>Room {order.room}</span>
+                                    <span>Room {order.roomNumber}</span>
                                     <span>{order.time}</span>
                                 </div>
                             </div>
@@ -400,22 +272,22 @@ export default function ManagerDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {recentBookings.map((booking) => (
+                            {mockRecentBookings.map((booking) => (
                                 <div key={booking.id} className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <Avatar>
                                             <AvatarFallback>
-                                                {booking.guest.split(' ').map((n) => n[0]).join('')}
+                                                {booking.guestName.split(' ').map((n) => n[0]).join('')}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <p className="font-medium">{booking.guest}</p>
-                                            <p className="text-sm text-muted-foreground">{booking.room}</p>
+                                            <p className="font-medium">{booking.guestName}</p>
+                                            <p className="text-sm text-muted-foreground">{booking.roomName}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <Badge variant={bookingStatusConfig[booking.status].variant}>
-                                            {bookingStatusConfig[booking.status].label}
+                                        <Badge variant={bookingStatusConfig[booking.status]?.variant || 'default'}>
+                                            {bookingStatusConfig[booking.status]?.label || booking.status}
                                         </Badge>
                                         <p className="text-sm text-muted-foreground mt-1">
                                             NPR {booking.amount.toLocaleString()}
@@ -440,8 +312,8 @@ export default function ManagerDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {housekeepingTasks.map((task, idx) => (
-                                <div key={idx} className="flex items-center justify-between">
+                            {mockHousekeepingTasks.map((task) => (
+                                <div key={task.id} className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div
                                             className={cn(
@@ -451,12 +323,12 @@ export default function ManagerDashboard() {
                                                 task.priority === 'low' && 'bg-green-100 text-green-700'
                                             )}
                                         >
-                                            {task.room}
+                                            {task.roomNumber}
                                         </div>
                                         <div>
-                                            <p className="font-medium">{task.type}</p>
+                                            <p className="font-medium text-capitalize">{task.taskType.replace('-', ' ')}</p>
                                             <p className="text-sm text-muted-foreground">
-                                                Assigned to {task.assignee}
+                                                Assigned to {task.assignee?.name || 'Unassigned'}
                                             </p>
                                         </div>
                                     </div>

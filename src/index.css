@@ -1,209 +1,205 @@
-/**
- * Hotel PMS - Global Styles
- * Tailwind CSS base styles and custom CSS variables
- */
+@import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@theme {
+  /* Royal Blue & Gold Palette */
+  --color-hotel-primary: #002366;
+  --color-hotel-secondary: #001a4d;
+  --color-hotel-accent: #D4AF37;
+  --color-hotel-accent-hover: #b5952f;
 
-@layer base {
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 45 100% 50%;
-    --card: 217.2 32.6% 12%;
-    --card-foreground: 45 100% 50%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 45 100% 50%;
-    --primary: 45 100% 50%;
-    --primary-foreground: 219 90% 15%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 45 100% 50%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 45 100% 50%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 45 100% 50%;
-  }
-}
+  /* Semantic Colors mapped to Unique CSS Variables */
+  --color-background: var(--tw-background);
+  --color-foreground: var(--tw-foreground);
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 219 90% 15%;
-    --card: 0 0% 100%;
-    --card-foreground: 219 90% 15%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 219 90% 15%;
-    --primary: 219 90% 20%; /* Deep Royal Blue */
-    --primary-foreground: 45 100% 50%; /* Gold Text */
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 219 90% 15%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 45 100% 50%; /* Gold */
-    --accent-foreground: 219 90% 15%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 219 90% 20%;
-    --radius: 0.5rem;
-  }
-}
+  --color-primary: var(--tw-primary);
+  --color-primary-foreground: var(--tw-primary-foreground);
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  
-  body {
-    @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-  }
-  
-  /* Custom scrollbar styles */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  --color-secondary: var(--tw-secondary);
+  --color-secondary-foreground: var(--tw-secondary-foreground);
+
+  --color-accent: var(--tw-accent);
+  --color-accent-foreground: var(--tw-accent-foreground);
+
+  --color-destructive: var(--tw-destructive);
+  --color-destructive-foreground: var(--tw-destructive-foreground);
+
+  --color-muted: var(--tw-muted);
+  --color-muted-foreground: var(--tw-muted-foreground);
+
+  --color-popover: var(--tw-popover);
+  --color-popover-foreground: var(--tw-popover-foreground);
+
+  --color-card: var(--tw-card);
+  --color-card-foreground: var(--tw-card-foreground);
+
+  --color-border: var(--tw-border);
+  --color-input: var(--tw-input);
+  --color-ring: var(--tw-ring);
+
+  --radius: var(--radius);
+
+  /* Keyframes */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-slide-in: slide-in 0.3s ease-out;
+  --animate-fade-in: fade-in 0.3s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
   }
 
-  ::-webkit-scrollbar-track {
-    @apply bg-muted;
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
   }
 
-  ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/30 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/50;
-  }
-}
-
-@layer components {
-  /* Hotel card hover effect */
-  .hotel-card {
-    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
-  }
-
-  /* Glass morphism effect */
-  .glass {
-    @apply bg-white/80 backdrop-blur-md border border-white/20;
-  }
-
-  /* Gradient backgrounds */
-  .gradient-primary {
-    @apply bg-gradient-to-r from-blue-600 to-blue-800;
-  }
-
-  .gradient-accent {
-    @apply bg-gradient-to-r from-amber-500 to-orange-600;
-  }
-
-  /* Status badges */
-  .status-available {
-    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
-  }
-
-  .status-occupied {
-    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
-  }
-
-  .status-maintenance {
-    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
-  }
-
-  .status-reserved {
-    @apply bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200;
-  }
-
-  /* Order status colors */
-  .order-pending {
-    @apply bg-yellow-100 text-yellow-800 border-yellow-300;
-  }
-
-  .order-preparing {
-    @apply bg-blue-100 text-blue-800 border-blue-300;
-  }
-
-  .order-ready {
-    @apply bg-green-100 text-green-800 border-green-300;
-  }
-
-  .order-delivered {
-    @apply bg-gray-100 text-gray-800 border-gray-300;
-  }
-
-  /* Mobile menu animation */
-  .menu-slide-in {
-    animation: slideIn 0.3s ease-out;
-  }
-
-  @keyframes slideIn {
+  @keyframes slide-in {
     from {
       transform: translateX(-100%);
     }
+
     to {
       transform: translateX(0);
     }
   }
 
-  /* Pulse animation for notifications */
-  .notification-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
 
-  /* Loading skeleton */
-  .skeleton {
-    @apply animate-pulse bg-muted rounded;
-  }
-
-  /* Custom focus ring */
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    to {
+      opacity: 1;
+    }
   }
 }
 
-@layer utilities {
-  /* Hide scrollbar but keep functionality */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+/* Global Theme Variables - Defined AFTER @theme for priority */
+:root {
+  --tw-background: #FFFFFF;
+  --tw-foreground: #002366;
 
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  --tw-card: #FFFFFF;
+  --tw-card-foreground: #002366;
 
-  /* Text balance for headings */
-  .text-balance {
-    text-wrap: balance;
-  }
+  --tw-popover: #FFFFFF;
+  --tw-popover-foreground: #002366;
 
-  /* Line clamp utilities */
-  .line-clamp-1 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 1;
-  }
+  --tw-primary: #002366;
+  --tw-primary-foreground: #FFFFFF;
 
-  .line-clamp-2 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-  }
+  --tw-secondary: #f8fafc;
+  --tw-secondary-foreground: #002366;
 
-  .line-clamp-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-  }
+  --tw-muted: #f1f5f9;
+  --tw-muted-foreground: #64748b;
+
+  --tw-accent: #D4AF37;
+  --tw-accent-foreground: #002366;
+
+  --tw-destructive: #ef4444;
+  --tw-destructive-foreground: #FFFFFF;
+
+  --tw-border: #e2e8f0;
+  --tw-input: #e2e8f0;
+  --tw-ring: #002366;
+
+  --radius: 0.5rem;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.dark {
+  --tw-background: #001a4d;
+  /* Deep Navy Blue */
+  --tw-foreground: #FFFFFF;
+  /* White */
+
+  --tw-card: #002366;
+  /* Navy Blue */
+  --tw-card-foreground: #FFFFFF;
+
+  --tw-popover: #002366;
+  --tw-popover-foreground: #FFFFFF;
+
+  --tw-primary: #D4AF37;
+  /* Golden for Dark Mode buttons */
+  --tw-primary-foreground: #002366;
+
+  --tw-secondary: #001a4d;
+  /* Darker Navy */
+  --tw-secondary-foreground: #FFFFFF;
+
+  --tw-muted: #001a4d;
+  --tw-muted-foreground: #a3b8d4;
+  /* Light blue-gray for dark mode */
+
+  --tw-accent: #D4AF37;
+  /* Gold accent */
+  --tw-accent-foreground: #002366;
+
+  --tw-destructive: #ef4444;
+  /* Red */
+  --tw-destructive-foreground: #FFFFFF;
+
+  --tw-border: #003399;
+  --tw-input: #0d2d5c;
+  --tw-ring: #D4AF37;
+}
+
+body {
+  background-color: var(--tw-background);
+  color: var(--tw-foreground);
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Utilities */
+.glass {
+  background: var(--tw-background);
+  opacity: 0.9;
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--tw-border);
+}
+
+.dark .glass {
+  background: var(--tw-card);
+  opacity: 0.8;
+}
+
+.hover-card {
+  transition: all 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 100 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

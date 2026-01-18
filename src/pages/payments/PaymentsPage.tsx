@@ -58,33 +58,13 @@ import { DateRangePicker } from '@/components/ui/date-picker';
 import { PageHeader, EmptyState } from '@/components/common';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils';
+import {
+  mockPayments,
+  Payment,
+  PaymentStatus,
+  PaymentMethod
+} from '@/data/mockData';
 
-/**
- * Payment status type
- */
-type PaymentStatus = 'completed' | 'pending' | 'failed' | 'refunded';
-
-/**
- * Payment method type
- */
-type PaymentMethod = 'esewa' | 'khalti' | 'card' | 'cash' | 'room-charge';
-
-/**
- * Payment interface
- */
-interface Payment {
-  id: string;
-  transactionId: string;
-  guestName: string;
-  amount: number;
-  method: PaymentMethod;
-  status: PaymentStatus;
-  type: 'booking' | 'restaurant' | 'service';
-  referenceNumber?: string;
-  bookingId?: string;
-  orderId?: string;
-  createdAt: string;
-}
 
 /**
  * Status configuration
@@ -107,91 +87,7 @@ const methodConfig: Record<PaymentMethod, { label: string; icon: string; color: 
   'room-charge': { label: 'Room Charge', icon: '🏨', color: 'bg-yellow-100 text-yellow-700' },
 };
 
-/**
- * Mock payments data
- */
-const paymentsData: Payment[] = [
-  {
-    id: '1',
-    transactionId: 'TXN-2024011801',
-    guestName: 'Ramesh Sharma',
-    amount: 15500,
-    method: 'esewa',
-    status: 'completed',
-    type: 'booking',
-    referenceNumber: 'ESW123456789',
-    bookingId: 'BK-2024-001',
-    createdAt: '2024-01-18T10:30:00',
-  },
-  {
-    id: '2',
-    transactionId: 'TXN-2024011802',
-    guestName: 'Sarah Johnson',
-    amount: 2450,
-    method: 'khalti',
-    status: 'completed',
-    type: 'restaurant',
-    referenceNumber: 'KHL987654321',
-    orderId: 'ORD-2024-045',
-    createdAt: '2024-01-18T09:15:00',
-  },
-  {
-    id: '3',
-    transactionId: 'TXN-2024011803',
-    guestName: 'Priya Patel',
-    amount: 35000,
-    method: 'card',
-    status: 'pending',
-    type: 'booking',
-    bookingId: 'BK-2024-003',
-    createdAt: '2024-01-18T08:45:00',
-  },
-  {
-    id: '4',
-    transactionId: 'TXN-2024011804',
-    guestName: 'John Smith',
-    amount: 5200,
-    method: 'room-charge',
-    status: 'completed',
-    type: 'restaurant',
-    orderId: 'ORD-2024-044',
-    createdAt: '2024-01-17T20:30:00',
-  },
-  {
-    id: '5',
-    transactionId: 'TXN-2024011805',
-    guestName: 'Anita Gurung',
-    amount: 12000,
-    method: 'cash',
-    status: 'completed',
-    type: 'booking',
-    bookingId: 'BK-2024-004',
-    createdAt: '2024-01-17T16:00:00',
-  },
-  {
-    id: '6',
-    transactionId: 'TXN-2024011806',
-    guestName: 'David Wilson',
-    amount: 28500,
-    method: 'card',
-    status: 'failed',
-    type: 'booking',
-    bookingId: 'BK-2024-005',
-    createdAt: '2024-01-17T14:20:00',
-  },
-  {
-    id: '7',
-    transactionId: 'TXN-2024011807',
-    guestName: 'Emma Brown',
-    amount: 8500,
-    method: 'esewa',
-    status: 'refunded',
-    type: 'booking',
-    referenceNumber: 'ESW555666777',
-    bookingId: 'BK-2024-006',
-    createdAt: '2024-01-17T11:10:00',
-  },
-];
+const paymentsData = mockPayments;
 
 /**
  * AdminPaymentsPage component
@@ -207,9 +103,9 @@ export default function AdminPaymentsPage() {
     from: undefined,
     to: undefined,
   });
-  
+
   const debouncedSearch = useDebounce(searchQuery, 300);
-  
+
   // Filter payments
   const filteredPayments = React.useMemo(() => {
     return paymentsData.filter((payment) => {
@@ -222,43 +118,43 @@ export default function AdminPaymentsPage() {
           return false;
         }
       }
-      
+
       if (statusFilter !== 'all' && payment.status !== statusFilter) {
         return false;
       }
-      
+
       if (methodFilter !== 'all' && payment.method !== methodFilter) {
         return false;
       }
-      
+
       if (typeFilter !== 'all' && payment.type !== typeFilter) {
         return false;
       }
-      
+
       return true;
     });
   }, [debouncedSearch, statusFilter, methodFilter, typeFilter]);
-  
+
   // Calculate stats
   const stats = React.useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
-    const todayPayments = paymentsData.filter((p) => 
+    const todayPayments = paymentsData.filter((p) =>
       p.createdAt.startsWith(today) && p.status === 'completed'
     );
     const todayTotal = todayPayments.reduce((sum, p) => sum + p.amount, 0);
-    
+
     const totalCompleted = paymentsData
       .filter((p) => p.status === 'completed')
       .reduce((sum, p) => sum + p.amount, 0);
-    
+
     const pendingAmount = paymentsData
       .filter((p) => p.status === 'pending')
       .reduce((sum, p) => sum + p.amount, 0);
-    
+
     const refundedAmount = paymentsData
       .filter((p) => p.status === 'refunded')
       .reduce((sum, p) => sum + p.amount, 0);
-    
+
     return {
       todayTotal,
       todayCount: todayPayments.length,
@@ -268,7 +164,7 @@ export default function AdminPaymentsPage() {
       refundedAmount,
     };
   }, []);
-  
+
   // Format currency
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NP', {
@@ -277,7 +173,7 @@ export default function AdminPaymentsPage() {
       minimumFractionDigits: 0,
     }).format(amount);
   };
-  
+
   // Format date time
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('en-US', {
@@ -320,7 +216,7 @@ export default function AdminPaymentsPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -334,7 +230,7 @@ export default function AdminPaymentsPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className={cn(stats.pendingCount > 0 && 'border-yellow-200')}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -351,7 +247,7 @@ export default function AdminPaymentsPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -466,7 +362,7 @@ export default function AdminPaymentsPage() {
                   const status = statusConfig[payment.status];
                   const method = methodConfig[payment.method];
                   const StatusIcon = status.icon;
-                  
+
                   return (
                     <TableRow key={payment.id}>
                       <TableCell>
@@ -546,7 +442,7 @@ export default function AdminPaymentsPage() {
                   Transaction {selectedPayment.transactionId}
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="space-y-4">
                 <div className="flex justify-between items-center p-4 bg-muted rounded-lg">
                   <span className="text-muted-foreground">Amount</span>
@@ -554,7 +450,7 @@ export default function AdminPaymentsPage() {
                     {formatCurrency(selectedPayment.amount)}
                   </span>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Status</p>
@@ -599,7 +495,7 @@ export default function AdminPaymentsPage() {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="flex gap-2 pt-4">
                   <Button variant="outline" className="flex-1">
                     <FileText className="h-4 w-4 mr-2" />

@@ -54,33 +54,12 @@ import { DateRangePicker } from '@/components/ui/date-picker';
 import { PageHeader, EmptyState } from '@/components/common';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useToast } from '@/hooks/use-toast';
+import {
+  mockBookings,
+  Booking,
+  BookingStatus
+} from '@/data/mockData';
 
-/**
- * Booking status type
- */
-type BookingStatus = 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled' | 'no-show';
-
-/**
- * Booking interface
- */
-interface Booking {
-  id: string;
-  reference: string;
-  guestName: string;
-  guestEmail: string;
-  guestPhone: string;
-  roomName: string;
-  roomNumber: string;
-  checkIn: string;
-  checkOut: string;
-  guests: number;
-  totalAmount: number;
-  paidAmount: number;
-  status: BookingStatus;
-  paymentStatus: 'paid' | 'partial' | 'pending';
-  source: 'direct' | 'website' | 'ota';
-  createdAt: string;
-}
 
 /**
  * Status badge config
@@ -94,101 +73,7 @@ const statusConfig: Record<BookingStatus, { label: string; variant: 'default' | 
   'no-show': { label: 'No Show', variant: 'destructive' },
 };
 
-/**
- * Mock bookings data
- */
-const bookingsData: Booking[] = [
-  {
-    id: '1',
-    reference: 'BK87654321',
-    guestName: 'Ramesh Sharma',
-    guestEmail: 'ramesh@example.com',
-    guestPhone: '+977 9841234567',
-    roomName: 'Deluxe Suite',
-    roomNumber: '305',
-    checkIn: '2024-01-20',
-    checkOut: '2024-01-23',
-    guests: 2,
-    totalAmount: 54000,
-    paidAmount: 54000,
-    status: 'confirmed',
-    paymentStatus: 'paid',
-    source: 'website',
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    reference: 'BK12345678',
-    guestName: 'Sarah Johnson',
-    guestEmail: 'sarah@example.com',
-    guestPhone: '+1 555-0123',
-    roomName: 'Executive Room',
-    roomNumber: '201',
-    checkIn: '2024-01-21',
-    checkOut: '2024-01-24',
-    guests: 1,
-    totalAmount: 36000,
-    paidAmount: 18000,
-    status: 'pending',
-    paymentStatus: 'partial',
-    source: 'ota',
-    createdAt: '2024-01-16',
-  },
-  {
-    id: '3',
-    reference: 'BK98765432',
-    guestName: 'Priya Patel',
-    guestEmail: 'priya@example.com',
-    guestPhone: '+91 9876543210',
-    roomName: 'Standard Room',
-    roomNumber: '102',
-    checkIn: '2024-01-20',
-    checkOut: '2024-01-21',
-    guests: 2,
-    totalAmount: 8000,
-    paidAmount: 8000,
-    status: 'checked-in',
-    paymentStatus: 'paid',
-    source: 'direct',
-    createdAt: '2024-01-19',
-  },
-  {
-    id: '4',
-    reference: 'BK11223344',
-    guestName: 'John Smith',
-    guestEmail: 'john@example.com',
-    guestPhone: '+44 7700 900123',
-    roomName: 'Presidential Suite',
-    roomNumber: '501',
-    checkIn: '2024-01-22',
-    checkOut: '2024-01-28',
-    guests: 2,
-    totalAmount: 270000,
-    paidAmount: 0,
-    status: 'confirmed',
-    paymentStatus: 'pending',
-    source: 'website',
-    createdAt: '2024-01-10',
-  },
-  {
-    id: '5',
-    reference: 'BK55667788',
-    guestName: 'Mike Wilson',
-    guestEmail: 'mike@example.com',
-    guestPhone: '+1 555-9876',
-    roomName: 'Family Suite',
-    roomNumber: '401',
-    checkIn: '2024-01-18',
-    checkOut: '2024-01-19',
-    guests: 4,
-    totalAmount: 22000,
-    paidAmount: 22000,
-    status: 'checked-out',
-    paymentStatus: 'paid',
-    source: 'direct',
-    createdAt: '2024-01-12',
-  },
-];
+const bookingsData = mockBookings;
 
 /**
  * AdminBookingsPage component

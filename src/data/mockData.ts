@@ -22,6 +22,184 @@ export type SubscriptionTier = 'basic' | 'professional' | 'enterprise';
 export type AdminRole = 'superadmin' | 'hotel_admin' | 'manager' | 'staff';
 export type AdminStatus = 'active' | 'inactive' | 'suspended' | 'pending';
 
+// Rooms
+export type RoomStatus = 'available' | 'occupied' | 'maintenance' | 'cleaning';
+
+export interface RoomType {
+  id: string;
+  name: string;
+  description: string;
+  basePrice: number;
+  capacity: number;
+  roomCount: number;
+}
+
+export interface Room {
+  id: string;
+  number: string;
+  name: string;
+  type: string;
+  floor: number;
+  capacity: number;
+  price: number;
+  status: RoomStatus;
+  isActive: boolean;
+  amenities: string[];
+  image: string;
+  lastCleaned: string;
+  currentGuest?: string;
+  checkOut?: string;
+}
+
+// Bookings
+export type BookingStatus = 'pending' | 'confirmed' | 'checked-in' | 'checked-out' | 'cancelled' | 'no-show';
+
+export interface Booking {
+  id: string;
+  reference: string;
+  guestName: string;
+  guestEmail: string;
+  guestPhone: string;
+  roomName: string;
+  roomNumber: string;
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+  totalAmount: number;
+  paidAmount: number;
+  status: BookingStatus;
+  paymentStatus: 'paid' | 'partial' | 'pending';
+  source: 'direct' | 'website' | 'ota';
+  createdAt: string;
+}
+
+// Guests
+export type MembershipTier = 'bronze' | 'silver' | 'gold' | 'platinum';
+
+export interface Guest {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address?: string;
+  city?: string;
+  country: string;
+  nationality?: string;
+  idType?: string;
+  idNumber?: string;
+  membershipTier: MembershipTier;
+  totalBookings: number;
+  totalSpent: number;
+  lastVisit?: string;
+  notes?: string;
+  isVIP: boolean;
+  createdAt: string;
+  avatar?: string;
+}
+
+// Orders
+export type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'served' | 'cancelled';
+export type DeliveryType = 'room' | 'table' | 'takeaway';
+
+export interface OrderItem {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+  notes?: string;
+  specialInstructions?: string;
+}
+
+export interface Order {
+  id: string;
+  orderNumber: string;
+  reference: string;
+  guestName: string;
+  guestPhone?: string;
+  roomNumber?: string;
+  tableNumber?: string;
+  location: string;
+  items: OrderItem[];
+  totalAmount: number;
+  status: OrderStatus;
+  deliveryType: DeliveryType;
+  paymentMethod: string;
+  isPaid: boolean;
+  notes?: string;
+  createdAt: string;
+}
+
+// Payments
+export type PaymentStatus = 'completed' | 'pending' | 'failed' | 'refunded';
+export type PaymentMethod = 'esewa' | 'khalti' | 'card' | 'cash' | 'room-charge';
+
+export interface Payment {
+  id: string;
+  transactionId: string;
+  guestName: string;
+  amount: number;
+  method: PaymentMethod;
+  status: PaymentStatus;
+  type: 'booking' | 'restaurant' | 'service';
+  referenceNumber?: string;
+  bookingId?: string;
+  orderId?: string;
+  createdAt: string;
+}
+
+// Reviews
+export type ReviewCategory = 'room' | 'restaurant' | 'service' | 'amenities';
+
+export interface Review {
+  id: string;
+  guestName: string;
+  guestEmail: string;
+  category: ReviewCategory;
+  rating: number;
+  title: string;
+  content: string;
+  response?: string;
+  responseDate?: string;
+  roomNumber?: string;
+  orderNumber?: string;
+  isVerified: boolean;
+  isFlagged: boolean;
+  createdAt: string;
+}
+
+// Housekeeping
+export type TaskStatus = 'pending' | 'in-progress' | 'completed' | 'delayed';
+export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+export type TaskType = 'checkout-clean' | 'touch-up' | 'deep-clean' | 'maintenance' | 'turndown';
+
+export interface HousekeepingTask {
+  id: string;
+  roomNumber: string;
+  roomType: string;
+  taskType: TaskType;
+  priority: TaskPriority;
+  status: TaskStatus;
+  assignee?: {
+    id: string;
+    name: string;
+  };
+  scheduledTime?: string;
+  startedAt?: string;
+  completedAt?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+export interface HousekeepingStaff {
+  id: string;
+  name: string;
+  role: string;
+  assignedTasks: number;
+  completedToday: number;
+  isAvailable: boolean;
+}
+
 // ============================================================================
 // HOTEL INTERFACES
 // ============================================================================
@@ -957,7 +1135,7 @@ export function calculatePortfolioStats() {
     mockHotelPerformance.filter(h => h.occupancy > 0).length
   );
   const totalAlerts = mockHotelPerformance.reduce((sum, h) => sum + h.alerts, 0);
-  
+
   return {
     totalHotels: mockHotels.length,
     activeHotels,
@@ -971,46 +1149,910 @@ export function calculatePortfolioStats() {
 }
 
 // ============================================================================
+// MOCK DATA - MENU & RESTAURANT
+// ============================================================================
+
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+  icon: string; // Store icon name as string (e.g., 'Coffee', 'Utensils')
+  itemCount: number;
+  isActive: boolean;
+}
+
+export interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  categoryId: string;
+  categoryName: string;
+  image: string;
+  isVegetarian: boolean;
+  isSpicy: boolean;
+  isPopular: boolean;
+  prepTime: number;
+  isAvailable: boolean;
+  createdAt: string;
+}
+
+export const mockCategories: Category[] = [
+  { id: '1', name: 'Breakfast', description: 'Morning meals', icon: 'Croissant', itemCount: 6, isActive: true },
+  { id: '2', name: 'Nepali', description: 'Traditional favorites', icon: 'Utensils', itemCount: 5, isActive: true },
+  { id: '3', name: 'Indian', description: 'Authentic flavors', icon: 'Soup', itemCount: 4, isActive: true },
+  { id: '4', name: 'Chinese', description: 'Asian delights', icon: 'Pizza', itemCount: 4, isActive: true },
+  { id: '5', name: 'Continental', description: 'Western cuisine', icon: 'Beef', itemCount: 3, isActive: true },
+  { id: '6', name: 'Beverages', description: 'Drinks & more', icon: 'Coffee', itemCount: 5, isActive: true },
+  { id: '7', name: 'Desserts', description: 'Sweet treats', icon: 'Cake', itemCount: 4, isActive: true },
+];
+
+export const mockMenuItems: MenuItem[] = [
+  {
+    id: '1',
+    name: 'Dal Bhat Set',
+    description: 'Traditional Nepali meal with dal, rice, vegetables, pickle, and papad',
+    price: 350,
+    categoryId: '2',
+    categoryName: 'Nepali',
+    image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400',
+    isVegetarian: true,
+    isSpicy: false,
+    isPopular: true,
+    prepTime: 20,
+    isAvailable: true,
+    createdAt: '2024-01-01',
+  },
+  {
+    id: '2',
+    name: 'Momo (Chicken)',
+    description: 'Steamed dumplings filled with spiced chicken',
+    price: 280,
+    categoryId: '2',
+    categoryName: 'Nepali',
+    image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=400',
+    isVegetarian: false,
+    isSpicy: true,
+    isPopular: true,
+    prepTime: 25,
+    isAvailable: true,
+    createdAt: '2024-01-01',
+  },
+  {
+    id: '3',
+    name: 'Butter Chicken',
+    description: 'Creamy tomato-based curry with tender chicken',
+    price: 450,
+    categoryId: '3',
+    categoryName: 'Indian',
+    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400',
+    isVegetarian: false,
+    isSpicy: false,
+    isPopular: true,
+    prepTime: 30,
+    isAvailable: true,
+    createdAt: '2024-01-02',
+  },
+  {
+    id: '4',
+    name: 'English Breakfast',
+    description: 'Eggs, bacon, sausages, beans, toast, and grilled tomatoes',
+    price: 550,
+    categoryId: '1',
+    categoryName: 'Breakfast',
+    image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400',
+    isVegetarian: false,
+    isSpicy: false,
+    isPopular: true,
+    prepTime: 20,
+    isAvailable: true,
+    createdAt: '2024-01-03',
+  },
+  {
+    id: '5',
+    name: 'Grilled Salmon',
+    description: 'Fresh salmon fillet with lemon butter sauce',
+    price: 850,
+    categoryId: '5',
+    categoryName: 'Continental',
+    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400',
+    isVegetarian: false,
+    isSpicy: false,
+    isPopular: false,
+    prepTime: 35,
+    isAvailable: false,
+    createdAt: '2024-01-04',
+  },
+];
+
+// ============================================================================
+// MOCK DATA - DASHBOARD (MANAGER)
+// ============================================================================
+
+export const mockManagerStats = [
+  {
+    title: 'Total Bookings',
+    value: '156',
+    change: '+12.5%',
+    changeType: 'positive',
+    iconName: 'Calendar',
+    description: 'This month',
+  },
+  {
+    title: 'Occupancy Rate',
+    value: '78%',
+    change: '+5.2%',
+    changeType: 'positive',
+    iconName: 'BedDouble',
+    description: 'Current',
+  },
+  {
+    title: 'Revenue',
+    value: 'NPR 2.4M',
+    change: '+18.3%',
+    changeType: 'positive',
+    iconName: 'DollarSign',
+    description: 'This month',
+  },
+  {
+    title: 'Total Guests',
+    value: '324',
+    change: '-2.1%',
+    changeType: 'negative',
+    iconName: 'Users',
+    description: 'This month',
+  },
+];
+
+export const mockRoomAvailability = {
+  total: 50,
+  occupied: 39,
+  available: 8,
+  maintenance: 3,
+};
+
+export const mockRecentBookings = [
+  {
+    id: '1',
+    guestName: 'Ramesh Sharma',
+    roomName: 'Deluxe Suite 305',
+    checkIn: '2024-01-20',
+    checkOut: '2024-01-23',
+    status: 'confirmed',
+    amount: 54000,
+  },
+  {
+    id: '2',
+    guestName: 'Sarah Johnson',
+    roomName: 'Executive Room 201',
+    checkIn: '2024-01-21',
+    checkOut: '2024-01-24',
+    status: 'pending',
+    amount: 36000,
+  },
+  {
+    id: '3',
+    guestName: 'Priya Patel',
+    roomName: 'Standard Room 102',
+    checkIn: '2024-01-20',
+    checkOut: '2024-01-21',
+    status: 'checked-in',
+    amount: 8000,
+  },
+  {
+    id: '4',
+    guestName: 'John Smith',
+    roomName: 'Presidential Suite',
+    checkIn: '2024-01-22',
+    checkOut: '2024-01-28',
+    status: 'confirmed',
+    amount: 270000,
+  },
+];
+
+export const mockPendingOrders = [
+  {
+    id: 'ORD001',
+    items: 'Dal Bhat Set, Momo (2)',
+    roomNumber: '305',
+    time: '5 min ago',
+    total: 910,
+    status: 'preparing',
+  },
+  {
+    id: 'ORD002',
+    items: 'Butter Chicken, Naan (2)',
+    roomNumber: '201',
+    time: '8 min ago',
+    total: 650,
+    status: 'pending',
+  },
+  {
+    id: 'ORD003',
+    items: 'English Breakfast',
+    roomNumber: '102',
+    time: '12 min ago',
+    total: 550,
+    status: 'preparing',
+  },
+];
+
+export const mockTodayActivity = {
+  arrivals: [
+    { guestName: 'Mike Wilson', roomNumber: '401', time: '14:00' },
+    { guestName: 'Emma Brown', roomNumber: '208', time: '15:30' },
+    { guestName: 'David Lee', roomNumber: '312', time: '16:00' },
+  ],
+  departures: [
+    { guestName: 'Lisa Chen', roomNumber: '105', time: '10:00' },
+    { guestName: 'Tom Harris', roomNumber: '209', time: '11:00' },
+  ],
+};
+
+export const mockHousekeepingSummary = [
+  { room: '105', type: 'Checkout Clean', priority: 'high', assignee: 'Maya' },
+  { room: '209', type: 'Checkout Clean', priority: 'high', assignee: 'Rita' },
+  { room: '303', type: 'Touch-up', priority: 'medium', assignee: 'Sita' },
+  { room: '107', type: 'Deep Clean', priority: 'low', assignee: 'Maya' },
+];
+
+// ============================================================================
 // EXPORT ALL MOCK DATA AS SINGLE OBJECT (for easy import)
 // ============================================================================
+
+export const mockKitchenStats = [
+  {
+    title: 'Pending Orders',
+    value: 5,
+    subtext: 'Needs preparation',
+    iconName: 'AlertTriangle',
+    color: 'text-orange-600',
+    bgColor: 'bg-orange-50 dark:bg-orange-950/20',
+    borderColor: 'border-orange-200 dark:border-orange-900',
+  },
+  {
+    title: 'Cooking',
+    value: 3,
+    subtext: 'On stove',
+    iconName: 'UtensilsCrossed',
+    color: 'text-yellow-600',
+    bgColor: 'bg-yellow-50 dark:bg-yellow-950/20',
+    borderColor: 'border-yellow-200 dark:border-yellow-900',
+  },
+  {
+    title: 'Ready to Serve',
+    value: 2,
+    subtext: 'Waiting for pickup',
+    iconName: 'CheckCircle',
+    color: 'text-green-600',
+    bgColor: 'bg-green-50 dark:bg-green-950/20',
+    borderColor: 'border-green-200 dark:border-green-900',
+  },
+  {
+    title: 'Avg Prep Time',
+    value: '18m',
+    subtext: 'Target: 20m',
+    iconName: 'Clock',
+    color: 'text-muted-foreground',
+    bgColor: '',
+    borderColor: '',
+  },
+];
+
+export const mockKitchenTickets = {
+  new: [
+    {
+      id: '#1024',
+      location: 'Table 12',
+      time: '2 mins ago',
+      items: [
+        { name: '2x Chicken Burger', subtext: '' },
+        { name: '- No onions', subtext: '', isNote: true },
+        { name: '1x Fries (L)', subtext: '' },
+        { name: '2x Coke', subtext: '' },
+      ],
+      action: 'Start Cooking',
+      targetStatus: 'Cooking',
+      btnVariant: 'default', // Map to actual variant logic in component or just string
+      btnColor: 'bg-orange-500 hover:bg-orange-600',
+    },
+    {
+      id: '#1025',
+      location: 'Room 304',
+      time: 'Just now',
+      items: [
+        { name: '1x Club Sandwich', subtext: '' },
+        { name: '1x Coffee', subtext: '' },
+      ],
+      action: 'Start Cooking',
+      targetStatus: 'Cooking',
+      btnVariant: 'default',
+      btnColor: 'bg-orange-500 hover:bg-orange-600',
+    },
+  ],
+  cooking: [
+    {
+      id: '#1022',
+      location: 'Table 4',
+      time: '12 mins elapsed',
+      timeColor: 'text-yellow-600',
+      items: [
+        { name: '1x Pasta Alfredo', subtext: '' },
+        { name: '1x Garlic Bread', subtext: '' },
+      ],
+      action: 'Mark Ready',
+      targetStatus: 'Ready',
+      btnVariant: 'default',
+      btnColor: 'bg-green-600 hover:bg-green-700',
+    },
+  ],
+  ready: [
+    {
+      id: '#1020',
+      location: 'Room 101',
+      time: 'Waiting Pickup (4m)',
+      timeColor: 'text-green-600 font-bold',
+      items: [
+        { name: '1x Pizza', subtext: '', isDimmed: true },
+      ],
+      action: 'Served',
+      targetStatus: 'Served',
+      btnVariant: 'outline',
+      btnColor: '',
+    },
+  ],
+};
+
+export const mockHousekeepingStats = [
+  {
+    title: 'To Clean',
+    value: 12,
+    subtext: '4 high priority',
+    iconName: 'BedDouble',
+    color: 'text-red-500',
+    progress: 33,
+  },
+  {
+    title: 'In Progress',
+    value: 5,
+    subtext: 'AVG time: 25 mins',
+    iconName: 'Clock',
+    color: 'text-blue-500',
+  },
+  {
+    title: 'Ready',
+    value: 38,
+    subtext: 'Ready for check-in',
+    iconName: 'CheckCircle2',
+    color: 'text-green-500',
+  },
+];
+
+export const mockHousekeepingRooms = [
+  { number: '101', status: 'clean', assignee: '' },
+  { number: '102', status: 'dirty', assignee: 'Jane' },
+  { number: '103', status: 'cleaning', assignee: 'Sarah' },
+  { number: '104', status: 'clean', assignee: '' },
+  { number: '105', status: 'dirty', assignee: 'Jane' },
+  { number: '201', status: 'maintenance', assignee: '' },
+  { number: '202', status: 'clean', assignee: '' },
+  { number: '203', status: 'cleaning', assignee: 'Mike' },
+  { number: '204', status: 'dirty', assignee: 'Mike' },
+  { number: '205', status: 'clean', assignee: '' },
+  { number: '301', status: 'clean', assignee: '' },
+  { number: '302', status: 'dirty', assignee: 'Sarah' },
+];
+
+export const mockReceptionistStats = [
+  { title: 'Arrivals Today', value: '12', subtext: '4 checked in', iconName: 'Users' },
+  { title: 'Departures', value: '8', subtext: '2 checked out', iconName: 'LogOut' },
+  { title: 'In House', value: '45', subtext: '85% occupancy', iconName: 'BedDouble' },
+  { title: 'Available Rooms', value: '5', subtext: 'Clean & Ready', iconName: 'Search' },
+];
+
+export const mockGuestActivity = {
+  arrivals: [
+    { id: 1, guest: 'John Doe', room: '101', pax: '2 Adults', source: 'Booking.com', status: 'Paid' },
+    { id: 2, guest: 'Jane Smith', room: '102', pax: '1 Adult', source: 'Direct', status: 'Pending' },
+    { id: 3, guest: 'Robert Brown', room: '103', pax: '2 Adults, 1 Child', source: 'Expedia', status: 'Paid' },
+    { id: 4, guest: 'Emily Davis', room: '104', pax: '2 Adults', source: 'Walk-in', status: 'Paid' },
+  ],
+  departures: [],
+  inhouse: [],
+};
+
+export const mockFrontDeskRequests = [
+  { type: 'Wake up call', room: '204', time: '6:00 AM', iconName: 'Clock', color: 'text-orange-500' },
+  { type: 'Taxi to Airport', room: '305', time: '10:30 AM', iconName: 'Phone', color: 'text-blue-500' },
+  { type: 'Extra Towels', room: '102', time: 'Just now', iconName: 'Mail', color: 'text-green-500' },
+];
+
+export const mockShiftNotes = "Room 201 VIP guest arriving at 2 PM. Please ensure amenities are placed.\n\nNight audit needs to run at 11 PM.";
+
+export const mockRevenueStats = [
+  { title: 'Total Revenue', value: '$12,345', change: '+15%', changeType: 'positive', subtext: 'from last month', iconName: 'DollarSign' },
+  { title: 'RevPAR', value: '$85.00', change: '+5%', changeType: 'positive', subtext: 'vs target', iconName: 'TrendingUp' },
+  { title: 'ADR', value: '$105.00', change: '-2%', changeType: 'negative', subtext: 'vs last week', iconName: 'BarChart' },
+  { title: 'Occupancy', value: '82%', change: '+12%', changeType: 'positive', subtext: 'yoy', iconName: 'Users' },
+];
+
+export const mockRevenueOverview = [
+  { month: 'J', value: 40 },
+  { month: 'F', value: 60 },
+  { month: 'M', value: 45 },
+  { month: 'A', value: 70 },
+  { month: 'M', value: 80 },
+  { month: 'J', value: 55 },
+  { month: 'J', value: 65 },
+  { month: 'A', value: 85 },
+  { month: 'S', value: 90 },
+  { month: 'O', value: 75 },
+  { month: 'N', value: 60 },
+  { month: 'D', value: 95 },
+];
+
+// ============================================================================
+// MOCK DATA - ROOMS & BOOKINGS
+// ============================================================================
+
+export const mockRoomTypes: RoomType[] = [
+  { id: '1', name: 'Standard Room', description: 'Basic room with essential amenities', basePrice: 8000, capacity: 2, roomCount: 20 },
+  { id: '2', name: 'Deluxe Room', description: 'Spacious room with city views', basePrice: 12000, capacity: 2, roomCount: 15 },
+  { id: '3', name: 'Executive Suite', description: 'Luxury suite with separate living area', basePrice: 18000, capacity: 3, roomCount: 8 },
+  { id: '4', name: 'Family Suite', description: 'Perfect for families with extra space', basePrice: 22000, capacity: 4, roomCount: 5 },
+  { id: '5', name: 'Presidential Suite', description: 'Ultimate luxury experience', basePrice: 45000, capacity: 4, roomCount: 2 },
+];
+
+export const mockRooms: Room[] = [
+  {
+    id: '1',
+    number: '101',
+    name: 'Standard Room 101',
+    type: 'Standard Room',
+    floor: 1,
+    capacity: 2,
+    price: 8000,
+    status: 'available',
+    isActive: true,
+    amenities: ['wifi', 'tv', 'ac'],
+    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
+    lastCleaned: '2024-01-20T10:00:00',
+  },
+  {
+    id: '2',
+    number: '102',
+    name: 'Standard Room 102',
+    type: 'Standard Room',
+    floor: 1,
+    capacity: 2,
+    price: 8000,
+    status: 'occupied',
+    isActive: true,
+    amenities: ['wifi', 'tv', 'ac'],
+    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
+    lastCleaned: '2024-01-19T14:00:00',
+    currentGuest: 'Priya Patel',
+    checkOut: '2024-01-21',
+  },
+  {
+    id: '3',
+    number: '201',
+    name: 'Deluxe Room 201',
+    type: 'Deluxe Room',
+    floor: 2,
+    capacity: 2,
+    price: 12000,
+    status: 'cleaning',
+    isActive: true,
+    amenities: ['wifi', 'tv', 'ac', 'minibar'],
+    image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=400',
+    lastCleaned: '2024-01-20T08:00:00',
+  },
+  {
+    id: '4',
+    number: '305',
+    name: 'Executive Suite 305',
+    type: 'Executive Suite',
+    floor: 3,
+    capacity: 3,
+    price: 18000,
+    status: 'occupied',
+    isActive: true,
+    amenities: ['wifi', 'tv', 'ac', 'minibar', 'balcony'],
+    image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400',
+    lastCleaned: '2024-01-19T16:00:00',
+    currentGuest: 'Ramesh Sharma',
+    checkOut: '2024-01-23',
+  },
+  {
+    id: '5',
+    number: '107',
+    name: 'Standard Room 107',
+    type: 'Standard Room',
+    floor: 1,
+    capacity: 2,
+    price: 8000,
+    status: 'maintenance',
+    isActive: false,
+    amenities: ['wifi', 'tv', 'ac'],
+    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
+    lastCleaned: '2024-01-18T10:00:00',
+  },
+];
+
+export const mockBookings: Booking[] = [
+  {
+    id: '1',
+    reference: 'BK87654321',
+    guestName: 'Ramesh Sharma',
+    guestEmail: 'ramesh@example.com',
+    guestPhone: '+977 9841234567',
+    roomName: 'Deluxe Suite',
+    roomNumber: '305',
+    checkIn: '2024-01-20',
+    checkOut: '2024-01-23',
+    guests: 2,
+    totalAmount: 54000,
+    paidAmount: 54000,
+    status: 'confirmed',
+    paymentStatus: 'paid',
+    source: 'website',
+    createdAt: '2024-01-15',
+  },
+  {
+    id: '2',
+    reference: 'BK12345678',
+    guestName: 'Sarah Johnson',
+    guestEmail: 'sarah@example.com',
+    guestPhone: '+1 555-0123',
+    roomName: 'Executive Room',
+    roomNumber: '201',
+    checkIn: '2024-01-21',
+    checkOut: '2024-01-24',
+    guests: 1,
+    totalAmount: 36000,
+    paidAmount: 18000,
+    status: 'pending',
+    paymentStatus: 'partial',
+    source: 'ota',
+    createdAt: '2024-01-16',
+  },
+  {
+    id: '3',
+    reference: 'BK98765432',
+    guestName: 'Priya Patel',
+    guestEmail: 'priya@example.com',
+    guestPhone: '+91 9876543210',
+    roomName: 'Standard Room',
+    roomNumber: '102',
+    checkIn: '2024-01-20',
+    checkOut: '2024-01-21',
+    guests: 2,
+    totalAmount: 8000,
+    paidAmount: 8000,
+    status: 'checked-in',
+    paymentStatus: 'paid',
+    source: 'direct',
+    createdAt: '2024-01-17',
+  },
+];
+
+export const mockRecentTransactions = [
+  { id: 1, guest: 'Guest #101', room: 'Room 201', amount: '+$120.00', method: 'Credit Card' },
+  { id: 2, guest: 'Guest #102', room: 'Room 202', amount: '+$85.00', method: 'Cash' },
+  { id: 3, guest: 'Guest #103', room: 'Room 203', amount: '+$310.00', method: 'Credit Card' },
+  { id: 4, guest: 'Guest #104', room: 'Room 204', amount: '+$45.00', method: 'UPI' },
+  { id: 5, guest: 'Guest #105', room: 'Room 205', amount: '+$150.00', method: 'Credit Card' },
+];
+
+// ============================================================================
+// MOCK DATA - GUESTS, ORDERS & PAYMENTS
+// ============================================================================
+
+export const mockGuests: Guest[] = [
+  {
+    id: '1',
+    firstName: 'Ramesh',
+    lastName: 'Sharma',
+    email: 'ramesh.sharma@example.com',
+    phone: '+977 9841234567',
+    address: 'Lazimpat, Kathmandu',
+    city: 'Kathmandu',
+    country: 'Nepal',
+    nationality: 'Nepali',
+    idType: 'Citizenship',
+    idNumber: 'NP12345678',
+    membershipTier: 'gold',
+    totalBookings: 15,
+    totalSpent: 450000,
+    lastVisit: '2024-01-20',
+    isVIP: true,
+    createdAt: '2022-05-15',
+  },
+  {
+    id: '2',
+    firstName: 'Sarah',
+    lastName: 'Johnson',
+    email: 'sarah.johnson@example.com',
+    phone: '+1 555-0123',
+    city: 'New York',
+    country: 'United States',
+    nationality: 'American',
+    idType: 'Passport',
+    idNumber: 'US987654321',
+    membershipTier: 'silver',
+    totalBookings: 3,
+    totalSpent: 125000,
+    lastVisit: '2024-01-18',
+    isVIP: false,
+    createdAt: '2023-08-20',
+  },
+];
+
+export const mockOrders: Order[] = [
+  {
+    id: '1',
+    orderNumber: 'ORD001',
+    reference: 'ORD001',
+    guestName: 'Ramesh Sharma',
+    guestPhone: '+977 9841234567',
+    roomNumber: '305',
+    location: 'Room 305',
+    items: [
+      { id: '1', name: 'Dal Bhat Set', quantity: 1, price: 350 },
+      { id: '2', name: 'Momo (Chicken)', quantity: 2, price: 280, notes: 'Extra spicy', specialInstructions: 'Extra spicy' },
+    ],
+    totalAmount: 910,
+    status: 'preparing',
+    deliveryType: 'room',
+    paymentMethod: 'Room Charge',
+    isPaid: false,
+    createdAt: '2024-01-20T12:30:00',
+  },
+  {
+    id: '2',
+    orderNumber: 'ORD002',
+    reference: 'ORD002',
+    guestName: 'Sarah Johnson',
+    guestPhone: '+1 555-0123',
+    roomNumber: '201',
+    location: 'Room 201',
+    items: [
+      { id: '3', name: 'Butter Chicken', quantity: 1, price: 450 },
+      { id: '4', name: 'Naan', quantity: 2, price: 50 },
+    ],
+    totalAmount: 550,
+    status: 'pending',
+    deliveryType: 'room',
+    paymentMethod: 'Cash',
+    isPaid: true,
+    createdAt: '2024-01-20T12:45:00',
+  },
+];
+
+export const mockPayments: Payment[] = [
+  {
+    id: '1',
+    transactionId: 'TXN-2024011801',
+    guestName: 'Ramesh Sharma',
+    amount: 15500,
+    method: 'esewa',
+    status: 'completed',
+    type: 'booking',
+    referenceNumber: 'ESW123456789',
+    bookingId: 'BK-2024-001',
+    createdAt: '2024-01-18T10:30:00',
+  },
+  {
+    id: '2',
+    transactionId: 'TXN-2024011802',
+    guestName: 'Sarah Johnson',
+    amount: 2450,
+    method: 'khalti',
+    status: 'completed',
+    type: 'restaurant',
+    referenceNumber: 'KHL987654321',
+    orderId: 'ORD-2024-045',
+    createdAt: '2024-01-18T09:15:00',
+  },
+];
+
+// ============================================================================
+// MOCK DATA - REPORTS, REVIEWS & HOUSEKEEPING
+// ============================================================================
+
+export const mockRevenueData = [
+  { month: 'Jan', rooms: 1850000, restaurant: 420000, other: 85000 },
+  { month: 'Feb', rooms: 1920000, restaurant: 480000, other: 92000 },
+  { month: 'Mar', rooms: 2150000, restaurant: 560000, other: 110000 },
+  { month: 'Apr', rooms: 1980000, restaurant: 510000, other: 95000 },
+  { month: 'May', rooms: 2350000, restaurant: 620000, other: 125000 },
+  { month: 'Jun', rooms: 2480000, restaurant: 680000, other: 140000 },
+];
+
+export const mockOccupancyData = [
+  { month: 'Jan', rate: 68 },
+  { month: 'Feb', rate: 72 },
+  { month: 'Mar', rate: 78 },
+  { month: 'Apr', rate: 75 },
+  { month: 'May', rate: 82 },
+  { month: 'Jun', rate: 85 },
+];
+
+export const mockRoomTypePerformance = [
+  { type: 'Standard Room', revenue: 4250000, occupancy: 92, bookings: 480 },
+  { type: 'Deluxe Room', revenue: 3850000, occupancy: 85, bookings: 320 },
+  { type: 'Executive Suite', revenue: 2150000, occupancy: 78, bookings: 145 },
+  { type: 'Family Suite', revenue: 1450000, occupancy: 65, bookings: 85 },
+  { type: 'Presidential Suite', revenue: 980000, occupancy: 45, bookings: 28 },
+];
+
+export const mockTopMenuItems = [
+  { name: 'Dal Bhat Set', quantity: 1250, revenue: 437500 },
+  { name: 'Momo (Chicken)', quantity: 980, revenue: 274400 },
+  { name: 'Butter Chicken', quantity: 720, revenue: 324000 },
+  { name: 'English Breakfast', quantity: 650, revenue: 357500 },
+  { name: 'Grilled Chicken', quantity: 480, revenue: 312000 },
+];
+
+export const mockReviews: Review[] = [
+  {
+    id: '1',
+    guestName: 'Ramesh Sharma',
+    guestEmail: 'ramesh@example.com',
+    category: 'room',
+    rating: 5,
+    title: 'Excellent stay!',
+    content: 'The room was spotless, the view was amazing, and the staff was incredibly helpful. Will definitely come back!',
+    response: 'Thank you for your wonderful review! We look forward to welcoming you again.',
+    responseDate: '2024-01-18',
+    roomNumber: '305',
+    isVerified: true,
+    isFlagged: false,
+    createdAt: '2024-01-17',
+  },
+  {
+    id: '2',
+    guestName: 'Sarah Johnson',
+    guestEmail: 'sarah@example.com',
+    category: 'restaurant',
+    rating: 4,
+    title: 'Great food, slow service',
+    content: 'The food quality was excellent - especially the butter chicken. However, the room service was a bit slow during peak hours.',
+    isVerified: true,
+    isFlagged: false,
+    createdAt: '2024-01-16',
+  },
+];
+
+export const mockHousekeepingTasks: HousekeepingTask[] = [
+  {
+    id: '1',
+    roomNumber: '105',
+    roomType: 'Standard Room',
+    taskType: 'checkout-clean',
+    priority: 'high',
+    status: 'pending',
+    createdAt: '2024-01-20T10:00:00',
+  },
+  {
+    id: '2',
+    roomNumber: '209',
+    roomType: 'Deluxe Room',
+    taskType: 'checkout-clean',
+    priority: 'high',
+    status: 'in-progress',
+    assignee: { id: 'staff-1', name: 'Rita' },
+    startedAt: '2024-01-20T11:00:00',
+    createdAt: '2024-01-20T10:15:00',
+  },
+];
+
+export const mockHousekeepingStaff: HousekeepingStaff[] = [
+  { id: 'staff-1', name: 'Rita', role: 'Housekeeper', assignedTasks: 4, completedToday: 3, isAvailable: false },
+  { id: 'staff-2', name: 'Maya', role: 'Housekeeper', assignedTasks: 2, completedToday: 5, isAvailable: true },
+  { id: 'staff-3', name: 'Sita', role: 'Housekeeper', assignedTasks: 3, completedToday: 2, isAvailable: true },
+];
+
+export const mockHotelSettings = {
+  name: 'Grand Hotel Kathmandu',
+  email: 'info@grandkathmandu.com',
+  phone: '+977-1-4411999',
+  address: 'Durbar Marg, Kathmandu, Nepal',
+  currency: 'NPR',
+  timezone: 'Asia/Kathmandu',
+  checkInTime: '14:00',
+  checkOutTime: '12:00',
+  taxRate: 13,
+  serviceCharge: 10,
+};
 
 export const mockData = {
   // Configuration
   USE_MOCK_DATA,
-  
-  // Hotels
+
+  // Hotel Core Data
+  settings: mockHotelSettings,
   hotels: mockHotels,
   hotelPerformance: mockHotelPerformance,
-  
+
   // Admins & Users
   admins: mockAdmins,
   users: mockUsers,
   availableHotels,
-  
-  // Analytics
+
+  // Rooms & Bookings
+  rooms: mockRooms,
+  roomTypes: mockRoomTypes,
+  bookings: mockBookings,
+  guests: mockGuests,
+
+  // Restaurant & Orders
+  categories: mockCategories,
+  menuItems: mockMenuItems,
+  orders: mockOrders,
+
+  // Finance & Payments
+  payments: mockPayments,
+  totalRevenue: mockRevenueData,
+  occupancyHistory: mockOccupancyData,
+  revenueStats: mockRevenueStats,
+  revenueOverview: mockRevenueOverview,
+  recentTransactions: mockRecentTransactions,
+
+  // Analytics & Reports
   propertyPerformance: mockPropertyPerformance,
   monthlyTrends: mockMonthlyTrends,
   revenueByCategory: mockRevenueByCategory,
   guestDemographics: mockGuestDemographics,
   topSegments: mockTopSegments,
-  
+  roomTypePerformance: mockRoomTypePerformance,
+  topMenuItems: mockTopMenuItems,
+
+  // Housekeeping & Operations
+  housekeepingTasks: mockHousekeepingTasks,
+  housekeepingStaff: mockHousekeepingStaff,
+  housekeepingSummary: mockHousekeepingSummary,
+  housekeepingRooms: mockHousekeepingRooms,
+  housekeepingStats: mockHousekeepingStats,
+
+  // Reviews
+  reviews: mockReviews,
+
+  // Kitchen Dashboard
+  kitchenStats: mockKitchenStats,
+  kitchenTickets: mockKitchenTickets,
+
+  // Receptionist Dashboard
+  receptionistStats: mockReceptionistStats,
+  guestActivity: mockGuestActivity,
+  frontDeskRequests: mockFrontDeskRequests,
+  shiftNotes: mockShiftNotes,
+
+  // Manager Dashboard Stats
+  managerStats: mockManagerStats,
+  roomAvailability: mockRoomAvailability,
+  recentBookings: mockRecentBookings,
+  pendingOrders: mockPendingOrders,
+  todayActivity: mockTodayActivity,
+
   // Activities & Logs
   recentActivities: mockRecentActivities,
   auditLogs: mockAuditLogs,
-  
+
   // Subscriptions
   subscriptions: mockSubscriptions,
-  
+
   // System
   systemMetrics: mockSystemMetrics,
   serviceStatus: mockServiceStatus,
-  
-  // Config
+
+  // Config Mapping
   subscriptionTierConfig,
   hotelStatusConfig,
   adminRoleConfig,
   adminStatusConfig,
-  
+
   // Helpers
   getHotelById,
   getAdminById,

@@ -59,23 +59,44 @@ export default function MobileMenuLayout() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center justify-between px-4">
+      {/* Header with Banner Background */}
+      <header className="relative w-auto h-20 overflow-hidden group z-50 mx-2 mt-2 rounded-2xl bg-hotel-primary shadow-lg transition-all">
+        {/* Banner Image */}
+        <div className="absolute inset-0 z-0">
+          {/* Blurred Background Layer (Matches corners to image colors) */}
+          <img
+            src="/banner.png"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110"
+          />
+          {/* Main Image Layer (Fully visible) */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <img
+              src="/banner.png"
+              alt="Restaurant Background"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          {/* Very subtle overlays to maintain some contrast without darkening to grey */}
+          <div className="absolute inset-0 bg-white/5" />
+          <div className="absolute inset-0 backdrop-blur-[1px]" />
+        </div>
+
+        <div className="relative z-10 flex h-full items-center justify-between px-4">
           {/* Back button and title */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => navigate(-1)}
-              className="shrink-0"
+              className="shrink-0 text-white hover:bg-white/20 h-10 w-10"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-6 w-6" />
             </Button>
-            <div>
-              <h1 className="text-lg font-semibold">Restaurant Menu</h1>
+            <div className="drop-shadow-md">
+              <h1 className="text-xl font-bold text-white leading-tight">Restaurant Menu</h1>
               {tableId && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white/80 font-medium">
                   Table {tableId}
                 </p>
               )}
@@ -87,11 +108,11 @@ export default function MobileMenuLayout() {
             {/* Language selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20 h-10 w-10">
                   <Globe className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="backdrop-blur-xl bg-background/95">
                 <DropdownMenuItem>English</DropdownMenuItem>
                 <DropdownMenuItem>नेपाली</DropdownMenuItem>
               </DropdownMenuContent>
@@ -101,14 +122,14 @@ export default function MobileMenuLayout() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative"
+              className="relative text-white hover:bg-white/20 h-10 w-10"
               onClick={() => navigate(`${basePath}/cart`)}
             >
               <ShoppingCart className="h-5 w-5" />
               {totalItems > 0 && (
                 <Badge
                   variant="destructive"
-                  className="absolute -top-1 -right-1 h-5 min-w-5 px-1.5 text-[10px]"
+                  className="absolute top-1 right-1 h-5 min-w-5 px-1.5 text-[10px] ring-2 ring-black/40"
                 >
                   {totalItems}
                 </Badge>
@@ -119,7 +140,7 @@ export default function MobileMenuLayout() {
       </header>
 
       {/* Main content */}
-      <main className="flex-1">
+      <main className="flex-1 p-4">
         <Outlet />
       </main>
 

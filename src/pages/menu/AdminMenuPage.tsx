@@ -19,6 +19,14 @@ import {
   Settings,
   Power,
   Image,
+  Croissant,
+  Utensils,
+  Soup,
+  Pizza,
+  Beef,
+  Coffee,
+  Cake,
+  LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -63,131 +71,18 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PageHeader, EmptyState } from '@/components/common';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils';
+import { mockCategories, mockMenuItems, MenuItem } from '@/data/mockData';
 
-/**
- * Category interface
- */
-interface Category {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  itemCount: number;
-  isActive: boolean;
-}
-
-/**
- * Menu item interface
- */
-interface MenuItem {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  categoryId: string;
-  categoryName: string;
-  image: string;
-  isVegetarian: boolean;
-  isSpicy: boolean;
-  isPopular: boolean;
-  prepTime: number;
-  isAvailable: boolean;
-  createdAt: string;
-}
-
-/**
- * Mock categories data
- */
-const categoriesData: Category[] = [
-  { id: '1', name: 'Breakfast', description: 'Morning meals', icon: '🍳', itemCount: 6, isActive: true },
-  { id: '2', name: 'Nepali', description: 'Traditional favorites', icon: '🇳🇵', itemCount: 5, isActive: true },
-  { id: '3', name: 'Indian', description: 'Authentic flavors', icon: '🍛', itemCount: 4, isActive: true },
-  { id: '4', name: 'Chinese', description: 'Asian delights', icon: '🥡', itemCount: 4, isActive: true },
-  { id: '5', name: 'Continental', description: 'Western cuisine', icon: '🍝', itemCount: 3, isActive: true },
-  { id: '6', name: 'Beverages', description: 'Drinks & more', icon: '🥤', itemCount: 5, isActive: true },
-  { id: '7', name: 'Desserts', description: 'Sweet treats', icon: '🍰', itemCount: 4, isActive: true },
-];
-
-/**
- * Mock menu items data
- */
-const menuItemsData: MenuItem[] = [
-  {
-    id: '1',
-    name: 'Dal Bhat Set',
-    description: 'Traditional Nepali meal with dal, rice, vegetables, pickle, and papad',
-    price: 350,
-    categoryId: '2',
-    categoryName: 'Nepali',
-    image: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=400',
-    isVegetarian: true,
-    isSpicy: false,
-    isPopular: true,
-    prepTime: 20,
-    isAvailable: true,
-    createdAt: '2024-01-01',
-  },
-  {
-    id: '2',
-    name: 'Momo (Chicken)',
-    description: 'Steamed dumplings filled with spiced chicken',
-    price: 280,
-    categoryId: '2',
-    categoryName: 'Nepali',
-    image: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=400',
-    isVegetarian: false,
-    isSpicy: true,
-    isPopular: true,
-    prepTime: 25,
-    isAvailable: true,
-    createdAt: '2024-01-01',
-  },
-  {
-    id: '3',
-    name: 'Butter Chicken',
-    description: 'Creamy tomato-based curry with tender chicken',
-    price: 450,
-    categoryId: '3',
-    categoryName: 'Indian',
-    image: 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=400',
-    isVegetarian: false,
-    isSpicy: false,
-    isPopular: true,
-    prepTime: 30,
-    isAvailable: true,
-    createdAt: '2024-01-02',
-  },
-  {
-    id: '4',
-    name: 'English Breakfast',
-    description: 'Eggs, bacon, sausages, beans, toast, and grilled tomatoes',
-    price: 550,
-    categoryId: '1',
-    categoryName: 'Breakfast',
-    image: 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?w=400',
-    isVegetarian: false,
-    isSpicy: false,
-    isPopular: true,
-    prepTime: 20,
-    isAvailable: true,
-    createdAt: '2024-01-03',
-  },
-  {
-    id: '5',
-    name: 'Grilled Salmon',
-    description: 'Fresh salmon fillet with lemon butter sauce',
-    price: 850,
-    categoryId: '5',
-    categoryName: 'Continental',
-    image: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400',
-    isVegetarian: false,
-    isSpicy: false,
-    isPopular: false,
-    prepTime: 35,
-    isAvailable: false,
-    createdAt: '2024-01-04',
-  },
-];
+// Icon mapping
+const iconMap: Record<string, LucideIcon> = {
+  'Croissant': Croissant,
+  'Utensils': Utensils,
+  'Soup': Soup,
+  'Pizza': Pizza,
+  'Beef': Beef,
+  'Coffee': Coffee,
+  'Cake': Cake,
+};
 
 /**
  * AdminMenuPage component
@@ -200,12 +95,12 @@ export default function AdminMenuPage() {
   const [activeTab, setActiveTab] = React.useState('items');
   const [isAddItemOpen, setIsAddItemOpen] = React.useState(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = React.useState(false);
-  
+
   const debouncedSearch = useDebounce(searchQuery, 300);
-  
+
   // Filter menu items
   const filteredItems = React.useMemo(() => {
-    return menuItemsData.filter((item) => {
+    return mockMenuItems.filter((item) => {
       if (debouncedSearch) {
         const search = debouncedSearch.toLowerCase();
         if (
@@ -215,21 +110,21 @@ export default function AdminMenuPage() {
           return false;
         }
       }
-      
+
       if (categoryFilter !== 'all' && item.categoryId !== categoryFilter) {
         return false;
       }
-      
+
       return true;
     });
   }, [debouncedSearch, categoryFilter]);
-  
+
   // Stats
   const stats = {
-    totalItems: menuItemsData.length,
-    activeItems: menuItemsData.filter((i) => i.isAvailable).length,
-    categories: categoriesData.length,
-    popularItems: menuItemsData.filter((i) => i.isPopular).length,
+    totalItems: mockMenuItems.length,
+    activeItems: mockMenuItems.filter((i) => i.isAvailable).length,
+    categories: mockCategories.length,
+    popularItems: mockMenuItems.filter((i) => i.isPopular).length,
   };
 
   return (
@@ -281,7 +176,7 @@ export default function AdminMenuPage() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            
+
             <Dialog open={isAddItemOpen} onOpenChange={setIsAddItemOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -315,11 +210,16 @@ export default function AdminMenuPage() {
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
-                          {categoriesData.map((cat) => (
-                            <SelectItem key={cat.id} value={cat.id}>
-                              {cat.icon} {cat.name}
-                            </SelectItem>
-                          ))}
+                          {mockCategories.map((cat) => {
+                            const Icon = iconMap[cat.icon] || Utensils;
+                            return (
+                              <SelectItem key={cat.id} value={cat.id}>
+                                <div className="flex items-center gap-2">
+                                  <Icon className="h-4 w-4" /> {cat.name}
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                     </div>
@@ -467,11 +367,16 @@ export default function AdminMenuPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Categories</SelectItem>
-                    {categoriesData.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.icon} {cat.name}
-                      </SelectItem>
-                    ))}
+                    {mockCategories.map((cat) => {
+                      const Icon = iconMap[cat.icon] || Utensils;
+                      return (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-4 w-4" /> {cat.name}
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
                 <div className="flex border rounded-lg p-1">
@@ -657,56 +562,59 @@ export default function AdminMenuPage() {
         {/* Categories Tab */}
         <TabsContent value="categories" className="space-y-4">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {categoriesData.map((category) => (
-              <Card key={category.id} className={cn(!category.isActive && 'opacity-60')}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <span className="text-3xl">{category.icon}</span>
-                      <div>
-                        <h3 className="font-semibold">{category.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {category.itemCount} items
-                        </p>
+            {mockCategories.map((category) => {
+              const Icon = iconMap[category.icon] || Utensils;
+              return (
+                <Card key={category.id} className={cn(!category.isActive && 'opacity-60')}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl"><Icon className="h-8 w-8 text-primary" /></span>
+                        <div>
+                          <h3 className="font-semibold">{category.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {category.itemCount} items
+                          </p>
+                        </div>
                       </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Eye className="h-4 w-4 mr-2" />
+                            View Items
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem className="text-destructive">
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>
-                          <Edit className="h-4 w-4 mr-2" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Items
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem className="text-destructive">
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    {category.description}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <Badge variant={category.isActive ? 'success' : 'secondary'}>
-                      {category.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                    <Button variant="ghost" size="sm">
-                      View Items
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                    <p className="text-sm text-muted-foreground mb-3">
+                      {category.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <Badge variant={category.isActive ? 'success' : 'secondary'}>
+                        {category.isActive ? 'Active' : 'Inactive'}
+                      </Badge>
+                      <Button variant="ghost" size="sm">
+                        View Items
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </TabsContent>
       </Tabs>

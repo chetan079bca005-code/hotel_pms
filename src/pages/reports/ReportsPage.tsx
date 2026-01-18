@@ -34,64 +34,19 @@ import {
 import { DateRangePicker } from '@/components/ui/date-picker';
 import { Progress } from '@/components/ui/progress';
 import { PageHeader } from '@/components/common';
+import {
+  mockRevenueData,
+  mockOccupancyData,
+  mockRoomTypePerformance,
+  mockTopMenuItems,
+  mockGuestDemographics
+} from '@/data/mockData';
 
-/**
- * Revenue data by month
- */
-const revenueData = [
-  { month: 'Jan', rooms: 1850000, restaurant: 420000, other: 85000 },
-  { month: 'Feb', rooms: 1920000, restaurant: 480000, other: 92000 },
-  { month: 'Mar', rooms: 2150000, restaurant: 560000, other: 110000 },
-  { month: 'Apr', rooms: 1980000, restaurant: 510000, other: 95000 },
-  { month: 'May', rooms: 2350000, restaurant: 620000, other: 125000 },
-  { month: 'Jun', rooms: 2480000, restaurant: 680000, other: 140000 },
-];
-
-/**
- * Occupancy data by month
- */
-const occupancyData = [
-  { month: 'Jan', rate: 68 },
-  { month: 'Feb', rate: 72 },
-  { month: 'Mar', rate: 78 },
-  { month: 'Apr', rate: 75 },
-  { month: 'May', rate: 82 },
-  { month: 'Jun', rate: 85 },
-];
-
-/**
- * Room type performance
- */
-const roomTypePerformance = [
-  { type: 'Standard Room', revenue: 4250000, occupancy: 92, bookings: 480 },
-  { type: 'Deluxe Room', revenue: 3850000, occupancy: 85, bookings: 320 },
-  { type: 'Executive Suite', revenue: 2150000, occupancy: 78, bookings: 145 },
-  { type: 'Family Suite', revenue: 1450000, occupancy: 65, bookings: 85 },
-  { type: 'Presidential Suite', revenue: 980000, occupancy: 45, bookings: 28 },
-];
-
-/**
- * Top menu items
- */
-const topMenuItems = [
-  { name: 'Dal Bhat Set', quantity: 1250, revenue: 437500 },
-  { name: 'Momo (Chicken)', quantity: 980, revenue: 274400 },
-  { name: 'Butter Chicken', quantity: 720, revenue: 324000 },
-  { name: 'English Breakfast', quantity: 650, revenue: 357500 },
-  { name: 'Grilled Chicken', quantity: 480, revenue: 312000 },
-];
-
-/**
- * Guest demographics
- */
-const guestDemographics = [
-  { country: 'Nepal', percentage: 45, count: 1850 },
-  { country: 'India', percentage: 22, count: 905 },
-  { country: 'USA', percentage: 12, count: 495 },
-  { country: 'UK', percentage: 8, count: 330 },
-  { country: 'China', percentage: 6, count: 247 },
-  { country: 'Others', percentage: 7, count: 288 },
-];
+const revenueData = mockRevenueData;
+const occupancyData = mockOccupancyData;
+const roomTypePerformance = mockRoomTypePerformance;
+const topMenuItems = mockTopMenuItems;
+const guestDemographics = mockGuestDemographics;
 
 /**
  * AdminReportsPage component
@@ -108,7 +63,7 @@ export default function AdminReportsPage() {
   const totalRevenue = revenueData.reduce((sum, d) => sum + d.rooms + d.restaurant + d.other, 0);
   const avgOccupancy = Math.round(occupancyData.reduce((sum, d) => sum + d.rate, 0) / occupancyData.length);
   const totalBookings = roomTypePerformance.reduce((sum, d) => sum + d.bookings, 0);
-  const totalGuests = guestDemographics.reduce((sum, d) => sum + d.count, 0);
+  const totalGuests = guestDemographics.reduce((sum, d) => sum + d.guests, 0);
 
   return (
     <div className="space-y-6">
@@ -162,8 +117,8 @@ export default function AdminReportsPage() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="h-12 w-12 rounded-lg bg-green-100 flex items-center justify-center">
-                <DollarSign className="h-6 w-6 text-green-600" />
+              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                <DollarSign className="h-6 w-6 text-primary" />
               </div>
               <Badge variant="success" className="h-6">
                 <TrendingUp className="h-3 w-3 mr-1" />
@@ -171,17 +126,17 @@ export default function AdminReportsPage() {
               </Badge>
             </div>
             <div className="mt-4">
-              <p className="text-3xl font-bold">NPR {(totalRevenue / 1000000).toFixed(1)}M</p>
+              <p className="text-3xl font-bold text-primary">NPR {(totalRevenue / 1000000).toFixed(1)}M</p>
               <p className="text-sm text-muted-foreground">Total Revenue (YTD)</p>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="h-12 w-12 rounded-lg bg-blue-100 flex items-center justify-center">
-                <BedDouble className="h-6 w-6 text-blue-600" />
+              <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                <BedDouble className="h-6 w-6 text-primary" />
               </div>
               <Badge variant="success" className="h-6">
                 <TrendingUp className="h-3 w-3 mr-1" />
@@ -189,17 +144,17 @@ export default function AdminReportsPage() {
               </Badge>
             </div>
             <div className="mt-4">
-              <p className="text-3xl font-bold">{avgOccupancy}%</p>
+              <p className="text-3xl font-bold text-primary">{avgOccupancy}%</p>
               <p className="text-sm text-muted-foreground">Avg Occupancy Rate</p>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="h-12 w-12 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Calendar className="h-6 w-6 text-purple-600" />
+              <div className="h-12 w-12 rounded-lg bg-primary/5 flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-primary/80" />
               </div>
               <Badge variant="success" className="h-6">
                 <TrendingUp className="h-3 w-3 mr-1" />
@@ -207,17 +162,17 @@ export default function AdminReportsPage() {
               </Badge>
             </div>
             <div className="mt-4">
-              <p className="text-3xl font-bold">{totalBookings.toLocaleString()}</p>
+              <p className="text-3xl font-bold text-primary">{totalBookings.toLocaleString()}</p>
               <p className="text-sm text-muted-foreground">Total Bookings</p>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="h-12 w-12 rounded-lg bg-yellow-100 flex items-center justify-center">
-                <Star className="h-6 w-6 text-yellow-600" />
+              <div className="h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center">
+                <Star className="h-6 w-6 text-accent" />
               </div>
               <Badge variant="secondary" className="h-6">
                 <TrendingDown className="h-3 w-3 mr-1" />
@@ -225,7 +180,7 @@ export default function AdminReportsPage() {
               </Badge>
             </div>
             <div className="mt-4">
-              <p className="text-3xl font-bold">4.7</p>
+              <p className="text-3xl font-bold text-primary">4.7</p>
               <p className="text-sm text-muted-foreground">Guest Rating</p>
             </div>
           </CardContent>
@@ -278,26 +233,26 @@ export default function AdminReportsPage() {
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Revenue breakdown */}
                 <div className="grid grid-cols-3 gap-4 mt-6">
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <p className="text-xl font-bold text-blue-700">
+                  <div className="text-center p-4 bg-primary/5 rounded-lg border border-primary/10">
+                    <p className="text-xl font-bold text-primary">
                       NPR {(revenueData.reduce((s, d) => s + d.rooms, 0) / 1000000).toFixed(1)}M
                     </p>
-                    <p className="text-sm text-blue-600">Rooms</p>
+                    <p className="text-sm text-primary/70">Rooms</p>
                   </div>
-                  <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <p className="text-xl font-bold text-green-700">
+                  <div className="text-center p-4 bg-primary/5 rounded-lg border border-primary/10">
+                    <p className="text-xl font-bold text-primary">
                       NPR {(revenueData.reduce((s, d) => s + d.restaurant, 0) / 1000000).toFixed(1)}M
                     </p>
-                    <p className="text-sm text-green-600">Restaurant</p>
+                    <p className="text-sm text-primary/70">Restaurant</p>
                   </div>
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <p className="text-xl font-bold text-purple-700">
+                  <div className="text-center p-4 bg-accent/10 rounded-lg border border-accent/20">
+                    <p className="text-xl font-bold text-accent-foreground">
                       NPR {(revenueData.reduce((s, d) => s + d.other, 0) / 1000).toFixed(0)}K
                     </p>
-                    <p className="text-sm text-purple-600">Other</p>
+                    <p className="text-sm text-accent-foreground/70">Other</p>
                   </div>
                 </div>
               </CardContent>
@@ -354,7 +309,7 @@ export default function AdminReportsPage() {
                     </p>
                   </div>
                 </div>
-                
+
                 {/* Monthly data */}
                 <div className="grid grid-cols-6 gap-2 mt-6">
                   {occupancyData.map((data, idx) => (
@@ -391,25 +346,25 @@ export default function AdminReportsPage() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-blue-500" />
+                      <span className="h-3 w-3 rounded-full bg-primary" />
                       <span>Occupied</span>
                     </div>
                     <span className="font-bold">39 rooms (78%)</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-green-500" />
+                      <span className="h-3 w-3 rounded-full bg-primary/40" />
                       <span>Available</span>
                     </div>
                     <span className="font-bold">8 rooms (16%)</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="h-3 w-3 rounded-full bg-yellow-500" />
+                      <span className="h-3 w-3 rounded-full bg-accent" />
                       <span>Maintenance</span>
                     </div>
                     <span className="font-bold">3 rooms (6%)</span>
@@ -478,7 +433,7 @@ export default function AdminReportsPage() {
                     <p className="text-sm text-muted-foreground">Food Rating</p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Room Service</span>
@@ -523,22 +478,22 @@ export default function AdminReportsPage() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-3">
                   {guestDemographics.map((demo, idx) => (
                     <div key={idx} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <span className="text-xl">{
                           demo.country === 'Nepal' ? '🇳🇵' :
-                          demo.country === 'India' ? '🇮🇳' :
-                          demo.country === 'USA' ? '🇺🇸' :
-                          demo.country === 'UK' ? '🇬🇧' :
-                          demo.country === 'China' ? '🇨🇳' : '🌍'
+                            demo.country === 'India' ? '🇮🇳' :
+                              demo.country === 'USA' ? '🇺🇸' :
+                                demo.country === 'UK' ? '🇬🇧' :
+                                  demo.country === 'China' ? '🇨🇳' : '🌍'
                         }</span>
                         <div>
                           <p className="font-medium">{demo.country}</p>
                           <p className="text-xs text-muted-foreground">
-                            {demo.count.toLocaleString()} guests
+                            {demo.guests.toLocaleString()} guests
                           </p>
                         </div>
                       </div>
@@ -574,7 +529,7 @@ export default function AdminReportsPage() {
                     <p className="text-sm text-muted-foreground">VIP Guests</p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <h4 className="font-medium">Booking Sources</h4>
                   <div className="space-y-2">

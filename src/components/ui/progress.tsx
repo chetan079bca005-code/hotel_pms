@@ -35,11 +35,12 @@ const indicatorVariants = cva('h-full w-full flex-1 transition-all', {
   variants: {
     variant: {
       default: 'bg-primary',
-      success: 'bg-green-500',
-      warning: 'bg-yellow-500',
-      destructive: 'bg-destructive',
-      info: 'bg-blue-500',
-      gradient: 'bg-gradient-to-r from-primary to-primary/50',
+      // Strict Palette Mapping
+      success: 'bg-primary', // Mapped to Royal Blue
+      warning: 'bg-accent',  // Mapped to Gold
+      destructive: 'bg-destructive', // Keeping Red for critical errors
+      info: 'bg-primary/80', // Mapped to Royal Blue
+      gradient: 'bg-gradient-to-r from-primary to-accent', // Updated gradient
     },
   },
   defaultVariants: {
@@ -52,8 +53,8 @@ const indicatorVariants = cva('h-full w-full flex-1 transition-all', {
  */
 export interface ProgressProps
   extends React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>,
-    VariantProps<typeof progressVariants>,
-    VariantProps<typeof indicatorVariants> {
+  VariantProps<typeof progressVariants>,
+  VariantProps<typeof indicatorVariants> {
   // Show percentage label
   showLabel?: boolean;
   // Custom label text

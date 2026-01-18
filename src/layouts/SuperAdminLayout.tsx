@@ -17,12 +17,12 @@ import {
   Bell,
   Search,
   ChevronDown,
-  Sun,
-  Moon,
   Shield,
   Activity,
   FileText,
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
+import { LanguageSelector } from '@/components/common/LanguageSelector';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -88,7 +88,15 @@ const sidebarItems = [
 /**
  * Sidebar component for super admin
  */
-function SuperAdminSidebar({ className }: { className?: string }) {
+function SuperAdminSidebar({
+  className,
+  collapsed,
+  toggleCollapse
+}: {
+  className?: string;
+  collapsed?: boolean;
+  toggleCollapse?: () => void;
+}) {
   const location = useLocation();
 
   const isActive = (href: string) => {
@@ -101,19 +109,34 @@ function SuperAdminSidebar({ className }: { className?: string }) {
   return (
     <aside
       className={cn(
-        'flex flex-col border-r border-[#ffffff20] bg-hotel-primary text-white transition-all duration-300',
+        'flex flex-col border-r border-[#ffffff20] bg-hotel-primary text-white transition-all duration-300 h-full',
         className
       )}
     >
-      {/* Logo */}
-      <div className="flex h-16 items-center border-b border-[#ffffff20] px-6">
-        <Link to="/superadmin" className="flex items-center gap-2">
-          {/* Logo Icon */}
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-hotel-accent">
-            <Shield className="h-5 w-5" />
-          </div>
-          <span className="font-bold text-lg text-hotel-accent">Super Admin</span>
-        </Link>
+      {/* Logo & Toggle */}
+      <div className={cn("flex h-16 items-center border-b border-[#ffffff20] transition-all duration-300", collapsed ? "justify-center px-0" : "justify-between px-4")}>
+        {!collapsed && (
+          <Link to="/superadmin" className="flex items-center gap-2 overflow-hidden">
+            {/* Logo Icon */}
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-hotel-accent">
+              <Shield className="h-5 w-5" />
+            </div>
+            <span className="font-bold text-lg text-hotel-accent whitespace-nowrap">Super Admin</span>
+          </Link>
+        )}
+
+        {/* Toggle Button (Desktop) */}
+        <div className="hidden lg:flex">
+          {collapsed ? (
+            <Button variant="ghost" size="icon" onClick={toggleCollapse} className="text-gray-300 hover:text-white hover:bg-white/10 h-10 w-10">
+              <Shield className="h-6 w-6 text-hotel-accent" />
+            </Button>
+          ) : (
+            <Button variant="ghost" size="icon" onClick={toggleCollapse} className="text-gray-300 hover:text-white hover:bg-white/10 h-8 w-8">
+              <Menu className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Navigation */}
@@ -123,41 +146,60 @@ function SuperAdminSidebar({ className }: { className?: string }) {
             <Link
               key={item.href}
               to={item.href}
+              title={collapsed ? item.title : undefined}
               className={cn(
                 'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                 isActive(item.href)
                   ? 'text-hotel-accent bg-white/5'
-                  : 'text-gray-300 hover:bg-white/10 hover:text-white'
+                  : 'text-gray-300 hover:bg-white/10 hover:text-white',
+                collapsed && 'justify-center px-0'
               )}
             >
               <item.icon className={cn("h-5 w-5 shrink-0", isActive(item.href) ? "text-hotel-accent" : "text-gray-300")} />
-              {item.title}
+              {!collapsed && item.title}
             </Link>
           ))}
         </nav>
       </ScrollArea>
 
       {/* System status */}
-      <div className="border-t border-[#ffffff20] p-4">
-        <div className="rounded-lg bg-black/20 p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-sm font-medium text-white">System Status</span>
-          </div>
-          <p className="text-xs text-gray-400">
-            All services operational
-          </p>
-          <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
-            <div>
-              <span className="text-gray-400">Hotels:</span>
-              <span className="ml-1 font-medium text-white">24</span>
+      <div className="border-t border-[#ffffff20] p-4 shrink-0">
+        {!collapsed ? (
+          <>
+            <div className="rounded-lg bg-black/20 p-4 mb-3">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-sm font-medium text-white">System Status</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span className="text-gray-400">Hotels:</span>
+                  <span className="ml-1 font-medium text-white">24</span>
+                </div>
+                <div>
+                  <span className="text-gray-400">Active:</span>
+                  <span className="ml-1 font-medium text-green-400">22</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <span className="text-gray-400">Active:</span>
-              <span className="ml-1 font-medium text-green-400">22</span>
-            </div>
+
+            <Link to="/superadmin/docs" className="flex items-center gap-3 rounded-lg bg-white/5 p-3 hover:bg-white/10 transition-colors group">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 group-hover:bg-hotel-accent/20 transition-colors">
+                <FileText className="h-4 w-4 text-hotel-accent" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-white">Documentation</p>
+                <p className="text-xs text-gray-400">User Guide & API</p>
+              </div>
+            </Link>
+          </>
+        ) : (
+          <div className="flex justify-center">
+            <Link to="/superadmin/docs" className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-hotel-accent transition-colors" title="Documentation">
+              <FileText className="h-4 w-4" />
+            </Link>
           </div>
-        </div>
+        )}
       </div>
     </aside>
   );
@@ -169,16 +211,10 @@ function SuperAdminSidebar({ className }: { className?: string }) {
 export default function SuperAdminLayout() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const [collapsed, setCollapsed] = React.useState(false);
 
   // Auth state
   const { user, logout } = useAuthStore();
-
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
 
   // Handle logout
   const handleLogout = async () => {
@@ -187,9 +223,16 @@ export default function SuperAdminLayout() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex h-screen bg-background overflow-hidden">
       {/* Desktop Sidebar */}
-      <SuperAdminSidebar className="hidden lg:flex w-64 shrink-0" />
+      <SuperAdminSidebar
+        className={cn(
+          "hidden lg:flex shrink-0 h-full",
+          collapsed ? "w-[70px]" : "w-64"
+        )}
+        collapsed={collapsed}
+        toggleCollapse={() => setCollapsed(!collapsed)}
+      />
 
       {/* Mobile Sidebar */}
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
@@ -199,112 +242,133 @@ export default function SuperAdminLayout() {
       </Sheet>
 
       {/* Main content area */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex flex-1 flex-col h-full overflow-hidden">
         {/* Header */}
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-background/95 backdrop-blur px-6 transition-all">
-          <div className="flex items-center gap-4">
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-
-            {/* Title */}
-            <h1 className="text-lg font-semibold text-foreground/80 hidden sm:block">
-              Super Admin Dashboard
-            </h1>
-          </div>
-
-          {/* Right side actions */}
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="relative hidden md:block">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="pl-9 h-9 w-64 bg-muted/40 border-none focus-visible:ring-1"
+        <header className="relative flex h-20 lg:h-24 shrink-0 items-center justify-between z-10 p-4 lg:p-6 transition-all overflow-hidden mx-2 mt-2 rounded-2xl bg-[#5c77a3] shadow-lg group">
+          {/* Banner Background */}
+          <div className="absolute inset-0 z-0">
+            {/* Blurred Background Layer (Matches corners to image colors) */}
+            <img
+              src="/banner.png"
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110"
+            />
+            {/* Main Image Layer (Fully visible) */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img
+                src="/banner.png"
+                alt="System Background"
+                className="w-full h-full object-contain"
               />
             </div>
+            {/* Very subtle overlays to maintain some contrast without darkening to grey */}
+            <div className="absolute inset-0 bg-white/5" />
+            <div className="absolute inset-0 backdrop-blur-[1px]" />
+          </div>
 
-            {/* Theme toggle */}
-            <Button variant="ghost" size="icon" onClick={toggleDarkMode}>
-              {isDarkMode ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
+          <div className="relative z-10 flex w-full justify-between items-center">
+            <div className="flex items-center gap-4">
+              {/* Mobile menu button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden text-white hover:bg-white/20"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
 
-            {/* Notifications */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-background" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel>System Alerts</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <div className="max-h-64 overflow-auto">
-                  <DropdownMenuItem className="flex flex-col items-start gap-1 cursor-pointer p-3">
-                    <span className="font-medium">New hotel registration</span>
-                    <span className="text-xs text-muted-foreground">
-                      Mountain View Resort pending approval
-                    </span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex flex-col items-start gap-1 cursor-pointer p-3">
-                    <span className="font-medium">Subscription expiring</span>
-                    <span className="text-xs text-muted-foreground">
-                      3 hotels have subscriptions expiring this week
-                    </span>
-                  </DropdownMenuItem>
+              {/* Title */}
+              <div>
+                <div className="flex items-center gap-2 text-white/60 text-[10px] uppercase tracking-wider mb-0.5">
+                  <span>PMS</span>
+                  <span className="text-white/30">/</span>
+                  <span className="text-hotel-accent font-medium">Super Admin</span>
                 </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="justify-center font-medium cursor-pointer">
-                  View all alerts
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-md">
+                  System Overview
+                </h1>
+              </div>
+            </div>
 
-            {/* User menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full sm:h-auto sm:w-auto sm:rounded-lg sm:pl-2 sm:pr-3 gap-2 hover:bg-muted/50">
-                  <Avatar className="h-8 w-8 border border-white/10">
-                    <AvatarImage src={user?.avatar} alt={user?.fullName} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                      {user?.fullName ? getInitials(user.fullName) : 'SA'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="hidden sm:flex flex-col items-start text-left">
-                    <span className="text-sm font-medium leading-none">{user?.fullName || 'Super Admin'}</span>
-                    <span className="text-[10px] text-muted-foreground capitalize mt-0.5">System Admin</span>
-                  </div>
-                  <ChevronDown className="h-3 w-3 text-muted-foreground hidden sm:block" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 mt-2">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/superadmin/profile')} className="cursor-pointer">
-                  Profile Settings
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/superadmin/security')} className="cursor-pointer">
-                  Security Settings
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer focus:bg-destructive/10 focus:text-destructive">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Right side actions */}
+            <div className="flex items-center gap-3">
+              {/* Search */}
+              <div className="relative hidden md:block">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
+                <Input
+                  type="search"
+                  placeholder="System search..."
+                  className="pl-10 h-10 w-72 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus-visible:ring-hotel-accent/40 focus-visible:bg-white/15 backdrop-blur-md"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 bg-black/30 p-1 rounded-full backdrop-blur-md border border-white/10">
+                {/* Language toggle */}
+                <LanguageSelector className="rounded-full text-white/70 hover:text-white hover:bg-white/10 h-8 w-8" />
+
+                {/* Theme toggle */}
+                <ThemeToggle className="rounded-full text-white/70 hover:text-white hover:bg-white/10 h-8 w-8" />
+
+                {/* Notifications */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="relative rounded-full text-white/70 hover:text-white hover:bg-white/10 h-8 w-8">
+                      <Bell className="h-4 w-4" />
+                      <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-destructive ring-1 ring-black/40" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-80 backdrop-blur-xl bg-background/95">
+                    <DropdownMenuLabel>System Alerts</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <div className="max-h-64 overflow-auto">
+                      <DropdownMenuItem className="flex flex-col items-start gap-1 cursor-pointer p-3">
+                        <span className="font-medium">New hotel registration</span>
+                        <span className="text-xs text-muted-foreground">
+                          Mountain View Resort pending approval
+                        </span>
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <div className="h-4 w-px bg-white/20 hidden sm:block mx-1" />
+
+                {/* User menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0 overflow-hidden border border-white/30 hover:ring-2 hover:ring-hotel-accent/50 transition-all">
+                      <Avatar className="h-full w-full">
+                        <AvatarImage src={user?.avatar} alt={user?.fullName} />
+                        <AvatarFallback className="bg-hotel-accent text-hotel-primary font-bold">
+                          {user?.fullName ? getInitials(user.fullName) : 'SA'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 mt-2">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col">
+                        <span>{user?.fullName || 'Super Admin'}</span>
+                        <span className="text-[10px] font-normal text-muted-foreground capitalize">System Admin</span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/superadmin/profile')} className="cursor-pointer">
+                      Profile Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/superadmin/security')} className="cursor-pointer">
+                      Security Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
           </div>
         </header>
 

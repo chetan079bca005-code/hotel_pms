@@ -1,18 +1,12 @@
 /**
  * Hotel PMS - Language Selector Component
- * Dropdown component for switching between languages
+ * Direct toggle button to switch between English and Nepali
  */
 
 import { useTranslation } from 'react-i18next';
-import { Globe, Check } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { languages, changeLanguage, type LanguageCode } from '@/i18n';
+import { changeLanguage } from '@/i18n';
 import { cn } from '@/lib/utils';
 
 interface LanguageSelectorProps {
@@ -24,57 +18,51 @@ interface LanguageSelectorProps {
 
 /**
  * LanguageSelector component
- * Provides a dropdown for users to switch between available languages
+ * Direct button that toggles between English and Nepali
  */
 export function LanguageSelector({
   variant = 'ghost',
-  size = 'default',
-  showLabel = true,
+  size = 'icon',
+  showLabel = false,
   className,
 }: LanguageSelectorProps) {
   const { i18n } = useTranslation();
-  
-  // Get current language info
-  const currentLanguage = languages.find((lang) => lang.code === i18n.language) || languages[0];
-  
-  // Handle language change
-  const handleLanguageChange = (code: LanguageCode) => {
-    changeLanguage(code);
+
+  const currentLanguage = i18n.language;
+  const isNepali = currentLanguage === 'ne';
+
+  const toggleLanguage = () => {
+    const newLang = isNepali ? 'en' : 'ne';
+    changeLanguage(newLang);
   };
 
+  if (showLabel) {
+    return (
+      <Button
+        variant={variant}
+        size={size}
+        className={cn("gap-2", className)}
+        onClick={toggleLanguage}
+        title={isNepali ? 'Switch to English' : 'नेपालीमा स्विच गर्नुहोस्'}
+      >
+        <Globe className="h-4 w-4" />
+        <span className="text-sm font-medium">
+          {isNepali ? 'नेपाली' : 'English'}
+        </span>
+      </Button>
+    );
+  }
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={variant} size={size} className={cn('gap-2', className)}>
-          <Globe className="h-4 w-4" />
-          {showLabel && (
-            <span className="hidden sm:inline-block">
-              {currentLanguage.nativeName}
-            </span>
-          )}
-          <span className="sm:hidden">{currentLanguage.flag}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        {languages.map((language) => (
-          <DropdownMenuItem
-            key={language.code}
-            onClick={() => handleLanguageChange(language.code)}
-            className="flex items-center justify-between cursor-pointer"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-lg">{language.flag}</span>
-              <div className="flex flex-col">
-                <span className="font-medium">{language.nativeName}</span>
-                <span className="text-xs text-muted-foreground">{language.name}</span>
-              </div>
-            </div>
-            {i18n.language === language.code && (
-              <Check className="h-4 w-4 text-primary" />
-            )}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Button
+      variant={variant}
+      size={size}
+      className={className}
+      onClick={toggleLanguage}
+      title={isNepali ? 'Switch to English' : 'नेपालीमा स्विच गर्नुहोस्'}
+    >
+      <Globe className="h-[1.2rem] w-[1.2rem]" />
+      <span className="sr-only">Toggle language</span>
+    </Button>
   );
 }
