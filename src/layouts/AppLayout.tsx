@@ -22,9 +22,10 @@ import {
   Bell,
   Search,
   ChevronDown,
-  Sun,
-  Moon,
 } from 'lucide-react';
+import { ThemeToggle } from '@/components/common/ThemeToggle';
+import { LanguageSelector } from '@/components/common/LanguageSelector';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -220,12 +221,21 @@ function Sidebar({ className, collapsed, toggleCollapse }: { className?: string;
 
       {/* Bottom section */}
       <div className="border-t border-[#ffffff20] p-4">
-        {!collapsed && (
-          <div className="rounded-lg bg-black/20 p-4">
-            <p className="text-sm font-medium text-white">Need help?</p>
-            <p className="text-xs text-gray-400 mt-1">
-              Check documentation
-            </p>
+        {!collapsed ? (
+          <Link to="/admin/docs" className="flex items-center gap-3 rounded-lg bg-white/5 p-3 hover:bg-white/10 transition-colors group">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 group-hover:bg-hotel-accent/20 transition-colors">
+              <ClipboardList className="h-4 w-4 text-hotel-accent" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white">Documentation</p>
+              <p className="text-xs text-gray-400">User Guide</p>
+            </div>
+          </Link>
+        ) : (
+          <div className="flex justify-center">
+            <Link to="/admin/docs" className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-hotel-accent transition-colors" title="Documentation">
+              <ClipboardList className="h-4 w-4" />
+            </Link>
           </div>
         )}
       </div>
@@ -240,16 +250,9 @@ export default function AppLayout() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [collapsed, setCollapsed] = React.useState(false);
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
 
   // Auth state - USE useAuth for actions!
   const { user, logout } = useAuth();
-
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle('dark');
-  };
 
   // Handle logout
   const handleLogout = async () => {
@@ -275,111 +278,137 @@ export default function AppLayout() {
       {/* Main content area */}
       <div className="flex flex-1 flex-col h-full overflow-hidden">
         {/* Header */}
-        <header className="flex h-16 shrink-0 items-center justify-between border-b bg-background/95 backdrop-blur z-10 px-6 transition-all">
-          <div className="flex items-center gap-4">
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-
-            {/* Page Title (Breadcrumb placeholder) */}
-            <h1 className="text-lg font-semibold text-foreground/80 hidden sm:block">
-              Dashboard
-            </h1>
-          </div>
-
-          {/* Right side actions */}
-          <div className="flex items-center gap-3">
-            {/* Search */}
-            <div className="relative hidden md:block">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                className="pl-9 h-9 w-64 bg-muted/40 border-none focus-visible:ring-1"
+        <header className="relative flex h-20 lg:h-24 shrink-0 items-center justify-between z-10 p-4 lg:p-6 transition-all overflow-hidden mx-2 mt-2 rounded-2xl bg-[#5c77a3] shadow-lg group">
+          {/* Banner Background */}
+          <div className="absolute inset-0 z-0">
+            {/* Blurred Background Layer (Matches corners to image colors) */}
+            <img
+              src="/banner.png"
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover blur-xl opacity-40 scale-110"
+            />
+            {/* Main Image Layer (Fully visible) */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img
+                src="/banner.png"
+                alt="Header Background"
+                className="w-full h-full object-contain"
               />
             </div>
+            {/* Very subtle overlays to maintain some contrast without darkening to grey */}
+            <div className="absolute inset-0 bg-white/5" />
+            <div className="absolute inset-0 backdrop-blur-[1px]" />
+          </div>
 
-            {/* Theme toggle */}
-            <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="text-muted-foreground hover:text-foreground">
-              {isDarkMode ? (
-                <Sun className="h-5 w-5" />
-              ) : (
-                <Moon className="h-5 w-5" />
-              )}
-            </Button>
+          <div className="relative z-10 flex w-full justify-between items-center">
+            <div className="flex items-center gap-4">
+              {/* Mobile menu button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden text-white hover:bg-white/20"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
 
-            {/* Notifications */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
-                  <Bell className="h-5 w-5" />
-                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-background" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80 p-0 transform transition-all duration-200">
-                <div className="p-4 border-b">
-                  <h4 className="font-semibold leading-none">Notifications</h4>
-                  <p className="text-xs text-muted-foreground mt-1">You have 3 unread messages</p>
+              {/* Page Title & Breadcrumb */}
+              <div>
+                <div className="flex items-center gap-2 text-white/60 text-[10px] uppercase tracking-wider mb-0.5">
+                  <span>PMS</span>
+                  <span className="text-white/30">/</span>
+                  <span className="text-hotel-accent font-medium">Admin</span>
                 </div>
-                <div className="max-h-[300px] overflow-auto">
-                  <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer">
-                    <span className="font-medium text-sm">New booking received</span>
-                    <span className="text-xs text-muted-foreground">
-                      Room 101 booked for Dec 25-28
-                    </span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer">
-                    <span className="font-medium text-sm">Payment confirmed</span>
-                    <span className="text-xs text-muted-foreground">
-                      NPR 15,000 received via eSewa
-                    </span>
-                  </DropdownMenuItem>
-                </div>
-                <div className="p-2 border-t text-center">
-                  <Button variant="link" size="sm" className="w-full text-xs">View all</Button>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <h1 className="text-2xl font-bold text-white tracking-tight drop-shadow-md">
+                  Dashboard
+                </h1>
+              </div>
+            </div>
 
-            {/* User menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-9 w-9 rounded-full sm:h-auto sm:w-auto sm:rounded-lg sm:pl-2 sm:pr-3 gap-2 hover:bg-muted/50">
-                  <Avatar className="h-8 w-8 border border-white/10">
-                    <AvatarImage src={user?.avatar} alt={user?.fullName} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                      {user?.fullName ? getInitials(user.fullName) : 'AD'}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="hidden sm:flex flex-col items-start text-left">
-                    <span className="text-sm font-medium leading-none">{user?.fullName || 'Admin'}</span>
-                    <span className="text-[10px] text-muted-foreground capitalize mt-0.5">{user?.role || 'User'}</span>
-                  </div>
-                  <ChevronDown className="h-3 w-3 text-muted-foreground hidden sm:block delay-150" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 mt-2">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => navigate('/admin/profile')} className="cursor-pointer">
-                  Profile Settings
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate('/admin/settings')} className="cursor-pointer">
-                  Hotel Settings
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer focus:bg-destructive/10 focus:text-destructive">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Right side actions */}
+            <div className="flex items-center gap-4">
+              {/* Search */}
+              <div className="relative hidden md:block">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="pl-10 h-9 w-64 bg-white/10 border-white/20 text-white placeholder:text-white/40 focus-visible:ring-hotel-accent/40 focus-visible:bg-white/15 backdrop-blur-md transition-all sm:text-sm"
+                />
+              </div>
+
+              <div className="flex items-center gap-1.5 bg-black/30 p-1 rounded-full backdrop-blur-md border border-white/10">
+                {/* Language toggle */}
+                <LanguageSelector className="rounded-full text-white/70 hover:text-white hover:bg-white/10 h-8 w-8" />
+
+                {/* Theme toggle */}
+                <ThemeToggle className="rounded-full text-white/70 hover:text-white hover:bg-white/10 h-8 w-8" />
+
+                {/* Notifications */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative rounded-full text-white/70 hover:text-white hover:bg-white/10 h-8 w-8"
+                    >
+                      <Bell className="h-4 w-4" />
+                      <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-destructive ring-1 ring-black/40" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-80 p-0 overflow-hidden backdrop-blur-xl bg-background/95">
+                    <div className="p-4 border-b">
+                      <h4 className="font-semibold leading-none text-sm">Notifications</h4>
+                      <p className="text-xs text-muted-foreground mt-1">You have 3 unread messages</p>
+                    </div>
+                    <div className="max-h-[300px] overflow-auto">
+                      <DropdownMenuItem className="flex flex-col items-start gap-1 p-3 cursor-pointer">
+                        <span className="font-medium text-sm">New booking received</span>
+                        <span className="text-xs text-muted-foreground">
+                          Room 101 booked for Dec 25-28
+                        </span>
+                      </DropdownMenuItem>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <div className="h-4 w-px bg-white/20 hidden sm:block mx-1" />
+
+                {/* User menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0 overflow-hidden border border-white/30 hover:ring-2 hover:ring-hotel-accent/50 transition-all">
+                      <Avatar className="h-full w-full">
+                        <AvatarImage src={user?.avatar} alt={user?.fullName} />
+                        <AvatarFallback className="bg-hotel-accent text-hotel-primary text-xs font-bold">
+                          {user?.fullName ? getInitials(user.fullName) : 'AD'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56 mt-2">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col">
+                        <span className="text-sm">{user?.fullName || 'Admin'}</span>
+                        <span className="text-[10px] font-normal text-muted-foreground capitalize">{user?.role || 'User'}</span>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => navigate('/admin/profile')} className="cursor-pointer">
+                      Profile Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/admin/settings')} className="cursor-pointer">
+                      Hotel Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-destructive cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
           </div>
         </header>
 
@@ -388,6 +417,6 @@ export default function AppLayout() {
           <Outlet />
         </main>
       </div>
-    </div>
+    </div >
   );
 }

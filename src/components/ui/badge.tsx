@@ -23,23 +23,26 @@ const badgeVariants = cva(
         destructive:
           'border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80',
         outline: 'text-foreground',
-        // Hotel-specific status variants
+
+        // Strict Palette Mapping
         success:
-          'border-transparent bg-green-500 text-white hover:bg-green-600',
+          'border-transparent bg-primary text-white hover:bg-primary/90', // Mapped to Primary (Royal Blue)
         warning:
-          'border-transparent bg-yellow-500 text-white hover:bg-yellow-600',
-        info: 'border-transparent bg-blue-500 text-white hover:bg-blue-600',
-        // Booking status variants
+          'border-transparent bg-accent text-white hover:bg-accent/90', // Mapped to Accent (Gold)
+        info:
+          'border-transparent bg-primary/80 text-white hover:bg-primary',
+
+        // Booking status variants - Mapped to soft versions of strict palette
         confirmed:
-          'border-transparent bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+          'border-transparent bg-primary/10 text-primary border-primary/20',
         pending:
-          'border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+          'border-transparent bg-accent/10 text-accent-foreground border-accent/20',
         cancelled:
-          'border-transparent bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+          'border-transparent bg-destructive/10 text-destructive border-destructive/20',
         'checked-in':
-          'border-transparent bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+          'border-transparent bg-primary text-white',
         'checked-out':
-          'border-transparent bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100',
+          'border-transparent bg-secondary text-secondary-foreground',
       },
       size: {
         sm: 'px-2 py-0.5 text-[10px]',
@@ -59,7 +62,7 @@ const badgeVariants = cva(
  */
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof badgeVariants> {
+  VariantProps<typeof badgeVariants> {
   // Optional remove button
   removable?: boolean;
   // Callback when remove is clicked

@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
+import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
@@ -57,14 +58,14 @@ type RegisterFormData = z.infer<typeof registerSchema>;
  */
 function calculatePasswordStrength(password: string): { score: number; label: string; color: string } {
   let score = 0;
-  
+
   if (password.length >= 8) score += 25;
   if (password.length >= 12) score += 10;
   if (/[A-Z]/.test(password)) score += 20;
   if (/[a-z]/.test(password)) score += 15;
   if (/[0-9]/.test(password)) score += 15;
   if (/[^A-Za-z0-9]/.test(password)) score += 15;
-  
+
   if (score <= 25) return { score, label: 'Weak', color: 'bg-red-500' };
   if (score <= 50) return { score, label: 'Fair', color: 'bg-orange-500' };
   if (score <= 75) return { score, label: 'Good', color: 'bg-yellow-500' };
@@ -155,7 +156,7 @@ export default function RegisterPage() {
         <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 mb-2">
           <BedDouble className="h-6 w-6 text-primary" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">Create an account</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Create an account</h1>
         <p className="text-sm text-muted-foreground">
           Join Namaste PMS to manage your property
         </p>
@@ -296,7 +297,7 @@ export default function RegisterPage() {
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
             </div>
-            
+
             {/* Password Strength Indicator */}
             {password && (
               <div className="space-y-2">
@@ -312,7 +313,7 @@ export default function RegisterPage() {
                     {passwordStrength.label}
                   </span>
                 </div>
-                
+
                 {/* Password Requirements */}
                 <div className="grid grid-cols-2 gap-1">
                   {passwordRequirements.map((req, idx) => (

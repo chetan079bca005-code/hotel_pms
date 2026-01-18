@@ -61,58 +61,26 @@ import { PageHeader, EmptyState } from '@/components/common';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import {
+  mockOrders,
+  Order,
+  OrderStatus,
+  DeliveryType,
+  OrderItem
+} from '@/data/mockData';
 
-/**
- * Order status type
- */
-type OrderStatus = 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
-
-/**
- * Order delivery type
- */
-type DeliveryType = 'room' | 'table' | 'takeaway';
-
-/**
- * Order item interface
- */
-interface OrderItem {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
-  specialInstructions?: string;
-}
-
-/**
- * Order interface
- */
-interface Order {
-  id: string;
-  reference: string;
-  items: OrderItem[];
-  deliveryType: DeliveryType;
-  location: string;
-  guestName: string;
-  guestPhone?: string;
-  totalAmount: number;
-  status: OrderStatus;
-  paymentMethod: string;
-  isPaid: boolean;
-  createdAt: string;
-  estimatedDelivery?: string;
-  notes?: string;
-}
 
 /**
  * Status badge config
  */
-const statusConfig: Record<OrderStatus, { label: string; variant: 'default' | 'secondary' | 'success' | 'warning' | 'destructive'; icon: React.ElementType }> = {
-  pending: { label: 'Pending', variant: 'warning', icon: Clock },
-  confirmed: { label: 'Confirmed', variant: 'default', icon: CheckCircle },
+const statusConfig: Record<OrderStatus, { label: string; variant: 'default' | 'secondary' | 'success' | 'warning' | 'destructive' | 'confirmed' | 'pending' | 'cancelled'; icon: React.ElementType }> = {
+  pending: { label: 'Pending', variant: 'pending', icon: Clock },
+  confirmed: { label: 'Confirmed', variant: 'confirmed', icon: CheckCircle },
   preparing: { label: 'Preparing', variant: 'default', icon: ChefHat },
   ready: { label: 'Ready', variant: 'success', icon: Package },
   delivered: { label: 'Delivered', variant: 'secondary', icon: Truck },
-  cancelled: { label: 'Cancelled', variant: 'destructive', icon: XCircle },
+  served: { label: 'Served', variant: 'secondary', icon: CheckCircle },
+  cancelled: { label: 'Cancelled', variant: 'cancelled', icon: XCircle },
 };
 
 /**
@@ -124,95 +92,7 @@ const deliveryTypeConfig: Record<DeliveryType, { label: string; icon: React.Elem
   takeaway: { label: 'Takeaway', icon: Package },
 };
 
-/**
- * Mock orders data
- */
-const ordersData: Order[] = [
-  {
-    id: '1',
-    reference: 'ORD001',
-    items: [
-      { id: '1', name: 'Dal Bhat Set', quantity: 1, price: 350 },
-      { id: '2', name: 'Momo (Chicken)', quantity: 2, price: 280, specialInstructions: 'Extra spicy' },
-    ],
-    deliveryType: 'room',
-    location: 'Room 305',
-    guestName: 'Ramesh Sharma',
-    guestPhone: '+977 9841234567',
-    totalAmount: 910,
-    status: 'preparing',
-    paymentMethod: 'Room Charge',
-    isPaid: false,
-    createdAt: '2024-01-20T12:30:00',
-    estimatedDelivery: '12:55',
-    notes: 'Guest prefers hot food',
-  },
-  {
-    id: '2',
-    reference: 'ORD002',
-    items: [
-      { id: '3', name: 'Butter Chicken', quantity: 1, price: 450 },
-      { id: '4', name: 'Naan', quantity: 2, price: 100 },
-    ],
-    deliveryType: 'room',
-    location: 'Room 201',
-    guestName: 'Sarah Johnson',
-    totalAmount: 650,
-    status: 'pending',
-    paymentMethod: 'Card',
-    isPaid: true,
-    createdAt: '2024-01-20T12:35:00',
-    estimatedDelivery: '13:05',
-  },
-  {
-    id: '3',
-    reference: 'ORD003',
-    items: [
-      { id: '5', name: 'English Breakfast', quantity: 1, price: 550 },
-    ],
-    deliveryType: 'table',
-    location: 'Table 5',
-    guestName: 'Walk-in Guest',
-    totalAmount: 550,
-    status: 'ready',
-    paymentMethod: 'Cash',
-    isPaid: false,
-    createdAt: '2024-01-20T12:20:00',
-  },
-  {
-    id: '4',
-    reference: 'ORD004',
-    items: [
-      { id: '6', name: 'Grilled Chicken', quantity: 2, price: 650 },
-      { id: '7', name: 'Caesar Salad', quantity: 1, price: 350 },
-      { id: '8', name: 'Fresh Juice', quantity: 2, price: 150 },
-    ],
-    deliveryType: 'room',
-    location: 'Room 401',
-    guestName: 'John Smith',
-    totalAmount: 1950,
-    status: 'confirmed',
-    paymentMethod: 'Room Charge',
-    isPaid: false,
-    createdAt: '2024-01-20T12:40:00',
-    estimatedDelivery: '13:10',
-  },
-  {
-    id: '5',
-    reference: 'ORD005',
-    items: [
-      { id: '9', name: 'Momo (Veg)', quantity: 1, price: 250 },
-    ],
-    deliveryType: 'takeaway',
-    location: 'Counter',
-    guestName: 'Priya Patel',
-    totalAmount: 250,
-    status: 'delivered',
-    paymentMethod: 'eSewa',
-    isPaid: true,
-    createdAt: '2024-01-20T11:30:00',
-  },
-];
+const ordersData = mockOrders;
 
 /**
  * AdminOrdersPage component

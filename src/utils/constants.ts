@@ -49,15 +49,15 @@ export const DEFAULT_CHECK_OUT_TIME = '11:00';
 export const ROOM_STATUS_COLORS = {
   available: '#10b981', // green
   occupied: '#ef4444', // red
-  reserved: '#3b82f6', // blue
-  maintenance: '#f59e0b', // yellow
+  reserved: '#002366', // brand navy blue
+  maintenance: '#D4AF37', // brand gold
   cleaning: '#8b5cf6', // purple
 };
 
 // Order status colors
 export const ORDER_STATUS_COLORS = {
-  pending: '#f59e0b',
-  confirmed: '#3b82f6',
+  pending: '#D4AF37', // brand gold
+  confirmed: '#002366', // brand navy blue
   preparing: '#8b5cf6',
   ready: '#10b981',
   delivered: '#6b7280',
@@ -66,8 +66,8 @@ export const ORDER_STATUS_COLORS = {
 
 // Booking status colors
 export const BOOKING_STATUS_COLORS = {
-  pending: '#f59e0b',
-  confirmed: '#3b82f6',
+  pending: '#D4AF37', // brand gold
+  confirmed: '#002366', // brand navy blue
   'checked-in': '#10b981',
   'checked-out': '#6b7280',
   cancelled: '#ef4444',

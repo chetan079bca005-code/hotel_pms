@@ -66,36 +66,12 @@ import { PageHeader, EmptyState } from '@/components/common';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import {
+  mockGuests,
+  Guest,
+  MembershipTier
+} from '@/data/mockData';
 
-/**
- * Guest membership type
- */
-type MembershipTier = 'bronze' | 'silver' | 'gold' | 'platinum';
-
-/**
- * Guest interface
- */
-interface Guest {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address?: string;
-  city?: string;
-  country: string;
-  nationality?: string;
-  idType?: string;
-  idNumber?: string;
-  membershipTier: MembershipTier;
-  totalBookings: number;
-  totalSpent: number;
-  lastVisit?: string;
-  notes?: string;
-  isVIP: boolean;
-  createdAt: string;
-  avatar?: string;
-}
 
 /**
  * Membership tier config
@@ -107,103 +83,7 @@ const membershipConfig: Record<MembershipTier, { label: string; color: string; i
   platinum: { label: 'Platinum', color: 'text-purple-700 bg-purple-100', icon: Crown },
 };
 
-/**
- * Mock guests data
- */
-const guestsData: Guest[] = [
-  {
-    id: '1',
-    firstName: 'Ramesh',
-    lastName: 'Sharma',
-    email: 'ramesh.sharma@example.com',
-    phone: '+977 9841234567',
-    address: 'Lazimpat, Kathmandu',
-    city: 'Kathmandu',
-    country: 'Nepal',
-    nationality: 'Nepali',
-    idType: 'Citizenship',
-    idNumber: 'NP12345678',
-    membershipTier: 'gold',
-    totalBookings: 15,
-    totalSpent: 450000,
-    lastVisit: '2024-01-20',
-    isVIP: true,
-    createdAt: '2022-05-15',
-  },
-  {
-    id: '2',
-    firstName: 'Sarah',
-    lastName: 'Johnson',
-    email: 'sarah.johnson@example.com',
-    phone: '+1 555-0123',
-    city: 'New York',
-    country: 'United States',
-    nationality: 'American',
-    idType: 'Passport',
-    idNumber: 'US987654321',
-    membershipTier: 'silver',
-    totalBookings: 3,
-    totalSpent: 125000,
-    lastVisit: '2024-01-18',
-    isVIP: false,
-    createdAt: '2023-08-20',
-  },
-  {
-    id: '3',
-    firstName: 'Priya',
-    lastName: 'Patel',
-    email: 'priya.patel@example.com',
-    phone: '+91 9876543210',
-    city: 'Mumbai',
-    country: 'India',
-    nationality: 'Indian',
-    idType: 'Passport',
-    idNumber: 'IN456789123',
-    membershipTier: 'bronze',
-    totalBookings: 2,
-    totalSpent: 35000,
-    lastVisit: '2024-01-20',
-    isVIP: false,
-    createdAt: '2023-11-10',
-  },
-  {
-    id: '4',
-    firstName: 'John',
-    lastName: 'Smith',
-    email: 'john.smith@example.com',
-    phone: '+44 7700 900123',
-    city: 'London',
-    country: 'United Kingdom',
-    nationality: 'British',
-    idType: 'Passport',
-    idNumber: 'GB111222333',
-    membershipTier: 'platinum',
-    totalBookings: 28,
-    totalSpent: 1250000,
-    lastVisit: '2024-01-15',
-    isVIP: true,
-    createdAt: '2021-03-22',
-    notes: 'Prefers quiet rooms, allergic to nuts',
-  },
-  {
-    id: '5',
-    firstName: 'Emma',
-    lastName: 'Brown',
-    email: 'emma.brown@example.com',
-    phone: '+61 412 345 678',
-    city: 'Sydney',
-    country: 'Australia',
-    nationality: 'Australian',
-    idType: 'Passport',
-    idNumber: 'AU444555666',
-    membershipTier: 'gold',
-    totalBookings: 8,
-    totalSpent: 320000,
-    lastVisit: '2023-12-28',
-    isVIP: true,
-    createdAt: '2022-09-05',
-  },
-];
+const guestsData = mockGuests;
 
 /**
  * AdminGuestsPage component

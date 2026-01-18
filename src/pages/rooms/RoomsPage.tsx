@@ -65,43 +65,14 @@ import { PageHeader, EmptyState } from '@/components/common';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import {
+  mockRooms,
+  mockRoomTypes,
+  Room,
+  RoomType,
+  RoomStatus
+} from '@/data/mockData';
 
-/**
- * Room status type
- */
-type RoomStatus = 'available' | 'occupied' | 'maintenance' | 'cleaning';
-
-/**
- * Room interface
- */
-interface Room {
-  id: string;
-  number: string;
-  name: string;
-  type: string;
-  floor: number;
-  capacity: number;
-  price: number;
-  status: RoomStatus;
-  isActive: boolean;
-  amenities: string[];
-  image: string;
-  lastCleaned: string;
-  currentGuest?: string;
-  checkOut?: string;
-}
-
-/**
- * Room type interface
- */
-interface RoomType {
-  id: string;
-  name: string;
-  description: string;
-  basePrice: number;
-  capacity: number;
-  roomCount: number;
-}
 
 /**
  * Status badge config
@@ -113,96 +84,9 @@ const statusConfig: Record<RoomStatus, { label: string; variant: 'default' | 'se
   cleaning: { label: 'Cleaning', variant: 'warning', icon: BedDouble },
 };
 
-/**
- * Mock room types data
- */
-const roomTypesData: RoomType[] = [
-  { id: '1', name: 'Standard Room', description: 'Basic room with essential amenities', basePrice: 8000, capacity: 2, roomCount: 20 },
-  { id: '2', name: 'Deluxe Room', description: 'Spacious room with city views', basePrice: 12000, capacity: 2, roomCount: 15 },
-  { id: '3', name: 'Executive Suite', description: 'Luxury suite with separate living area', basePrice: 18000, capacity: 3, roomCount: 8 },
-  { id: '4', name: 'Family Suite', description: 'Perfect for families with extra space', basePrice: 22000, capacity: 4, roomCount: 5 },
-  { id: '5', name: 'Presidential Suite', description: 'Ultimate luxury experience', basePrice: 45000, capacity: 4, roomCount: 2 },
-];
+const roomTypesData = mockRoomTypes;
 
-/**
- * Mock rooms data
- */
-const roomsData: Room[] = [
-  {
-    id: '1',
-    number: '101',
-    name: 'Standard Room 101',
-    type: 'Standard Room',
-    floor: 1,
-    capacity: 2,
-    price: 8000,
-    status: 'available',
-    isActive: true,
-    amenities: ['wifi', 'tv', 'ac'],
-    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
-    lastCleaned: '2024-01-20T10:00:00',
-  },
-  {
-    id: '2',
-    number: '102',
-    name: 'Standard Room 102',
-    type: 'Standard Room',
-    floor: 1,
-    capacity: 2,
-    price: 8000,
-    status: 'occupied',
-    isActive: true,
-    amenities: ['wifi', 'tv', 'ac'],
-    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
-    lastCleaned: '2024-01-19T14:00:00',
-    currentGuest: 'Priya Patel',
-    checkOut: '2024-01-21',
-  },
-  {
-    id: '3',
-    number: '201',
-    name: 'Deluxe Room 201',
-    type: 'Deluxe Room',
-    floor: 2,
-    capacity: 2,
-    price: 12000,
-    status: 'cleaning',
-    isActive: true,
-    amenities: ['wifi', 'tv', 'ac', 'minibar'],
-    image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=400',
-    lastCleaned: '2024-01-20T08:00:00',
-  },
-  {
-    id: '4',
-    number: '305',
-    name: 'Executive Suite 305',
-    type: 'Executive Suite',
-    floor: 3,
-    capacity: 3,
-    price: 18000,
-    status: 'occupied',
-    isActive: true,
-    amenities: ['wifi', 'tv', 'ac', 'minibar', 'balcony'],
-    image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400',
-    lastCleaned: '2024-01-19T16:00:00',
-    currentGuest: 'Ramesh Sharma',
-    checkOut: '2024-01-23',
-  },
-  {
-    id: '5',
-    number: '107',
-    name: 'Standard Room 107',
-    type: 'Standard Room',
-    floor: 1,
-    capacity: 2,
-    price: 8000,
-    status: 'maintenance',
-    isActive: false,
-    amenities: ['wifi', 'tv', 'ac'],
-    image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400',
-    lastCleaned: '2024-01-18T10:00:00',
-  },
-];
+const roomsData = mockRooms;
 
 /**
  * AdminRoomsPage component

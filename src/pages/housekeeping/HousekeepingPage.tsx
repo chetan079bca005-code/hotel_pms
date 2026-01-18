@@ -64,54 +64,20 @@ import { Progress } from '@/components/ui/progress';
 import { PageHeader, EmptyState } from '@/components/common';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import {
+  mockHousekeepingTasks,
+  mockHousekeepingStaff,
+  HousekeepingTask,
+  HousekeepingStaff,
+  TaskStatus,
+  TaskPriority,
+  TaskType
+} from '@/data/mockData';
 
-/**
- * Task status type
- */
-type TaskStatus = 'pending' | 'in-progress' | 'completed' | 'delayed';
+const tasksData = mockHousekeepingTasks;
+const staffData = mockHousekeepingStaff;
 
-/**
- * Task priority type
- */
-type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
-
-/**
- * Task type
- */
-type TaskType = 'checkout-clean' | 'touch-up' | 'deep-clean' | 'maintenance' | 'turndown';
-
-/**
- * Housekeeping task interface
- */
-interface HousekeepingTask {
-  id: string;
-  roomNumber: string;
-  roomType: string;
-  taskType: TaskType;
-  priority: TaskPriority;
-  status: TaskStatus;
-  assignee?: {
-    id: string;
-    name: string;
-  };
-  scheduledTime?: string;
-  startedAt?: string;
-  completedAt?: string;
-  notes?: string;
-  createdAt: string;
-}
-
-/**
- * Staff member interface
- */
-interface StaffMember {
-  id: string;
-  name: string;
-  role: string;
-  assignedTasks: number;
-  completedToday: number;
-  isAvailable: boolean;
-}
 
 /**
  * Status badge config
@@ -144,93 +110,6 @@ const taskTypeConfig: Record<TaskType, { label: string; duration: number }> = {
   turndown: { label: 'Turndown', duration: 15 },
 };
 
-/**
- * Mock tasks data
- */
-const tasksData: HousekeepingTask[] = [
-  {
-    id: '1',
-    roomNumber: '105',
-    roomType: 'Standard Room',
-    taskType: 'checkout-clean',
-    priority: 'high',
-    status: 'pending',
-    assignee: { id: '1', name: 'Maya Tamang' },
-    scheduledTime: '10:00',
-    notes: 'Guest checking out at 10:00',
-    createdAt: '2024-01-20T08:00:00',
-  },
-  {
-    id: '2',
-    roomNumber: '209',
-    roomType: 'Deluxe Room',
-    taskType: 'checkout-clean',
-    priority: 'high',
-    status: 'in-progress',
-    assignee: { id: '2', name: 'Rita Gurung' },
-    scheduledTime: '11:00',
-    startedAt: '2024-01-20T10:15:00',
-    createdAt: '2024-01-20T08:00:00',
-  },
-  {
-    id: '3',
-    roomNumber: '303',
-    roomType: 'Executive Suite',
-    taskType: 'touch-up',
-    priority: 'medium',
-    status: 'pending',
-    assignee: { id: '3', name: 'Sita Rai' },
-    scheduledTime: '14:00',
-    notes: 'Guest requested extra towels',
-    createdAt: '2024-01-20T08:00:00',
-  },
-  {
-    id: '4',
-    roomNumber: '107',
-    roomType: 'Standard Room',
-    taskType: 'deep-clean',
-    priority: 'low',
-    status: 'completed',
-    assignee: { id: '1', name: 'Maya Tamang' },
-    startedAt: '2024-01-20T08:30:00',
-    completedAt: '2024-01-20T10:00:00',
-    createdAt: '2024-01-19T16:00:00',
-  },
-  {
-    id: '5',
-    roomNumber: '401',
-    roomType: 'Family Suite',
-    taskType: 'turndown',
-    priority: 'medium',
-    status: 'pending',
-    assignee: { id: '4', name: 'Gita Sherpa' },
-    scheduledTime: '18:00',
-    createdAt: '2024-01-20T08:00:00',
-  },
-  {
-    id: '6',
-    roomNumber: '502',
-    roomType: 'Presidential Suite',
-    taskType: 'checkout-clean',
-    priority: 'urgent',
-    status: 'delayed',
-    assignee: { id: '2', name: 'Rita Gurung' },
-    scheduledTime: '09:00',
-    notes: 'VIP guest arriving at 12:00',
-    createdAt: '2024-01-20T07:00:00',
-  },
-];
-
-/**
- * Mock staff data
- */
-const staffData: StaffMember[] = [
-  { id: '1', name: 'Maya Tamang', role: 'Housekeeper', assignedTasks: 4, completedToday: 2, isAvailable: true },
-  { id: '2', name: 'Rita Gurung', role: 'Housekeeper', assignedTasks: 3, completedToday: 1, isAvailable: false },
-  { id: '3', name: 'Sita Rai', role: 'Housekeeper', assignedTasks: 2, completedToday: 0, isAvailable: true },
-  { id: '4', name: 'Gita Sherpa', role: 'Housekeeper', assignedTasks: 3, completedToday: 3, isAvailable: true },
-  { id: '5', name: 'Ram Lama', role: 'Supervisor', assignedTasks: 0, completedToday: 0, isAvailable: true },
-];
 
 /**
  * AdminHousekeepingPage component
@@ -242,9 +121,9 @@ export default function AdminHousekeepingPage() {
   const [priorityFilter, setPriorityFilter] = React.useState<string>('all');
   const [activeTab, setActiveTab] = React.useState('tasks');
   const [isAddTaskOpen, setIsAddTaskOpen] = React.useState(false);
-  
+
   const debouncedSearch = useDebounce(searchQuery, 300);
-  
+
   // Filter tasks
   const filteredTasks = React.useMemo(() => {
     return tasksData.filter((task) => {
@@ -257,19 +136,19 @@ export default function AdminHousekeepingPage() {
           return false;
         }
       }
-      
+
       if (statusFilter !== 'all' && task.status !== statusFilter) {
         return false;
       }
-      
+
       if (priorityFilter !== 'all' && task.priority !== priorityFilter) {
         return false;
       }
-      
+
       return true;
     });
   }, [debouncedSearch, statusFilter, priorityFilter]);
-  
+
   // Stats
   const stats = {
     total: tasksData.length,
@@ -278,10 +157,10 @@ export default function AdminHousekeepingPage() {
     completed: tasksData.filter((t) => t.status === 'completed').length,
     delayed: tasksData.filter((t) => t.status === 'delayed').length,
   };
-  
+
   // Progress percentage
   const completionRate = Math.round((stats.completed / stats.total) * 100);
-  
+
   // Format time
   const formatTime = (dateString?: string) => {
     if (!dateString) return 'N/A';
@@ -677,7 +556,7 @@ export default function AdminHousekeepingPage() {
                       <p className="text-sm text-muted-foreground">{staff.role}</p>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-4 mb-4">
                     <div className="text-center p-2 bg-muted rounded-lg">
                       <p className="text-xl font-bold">{staff.assignedTasks}</p>
@@ -688,7 +567,7 @@ export default function AdminHousekeepingPage() {
                       <p className="text-xs text-muted-foreground">Completed</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <Badge variant={staff.isAvailable ? 'success' : 'warning'}>
                       {staff.isAvailable ? 'Available' : 'Busy'}

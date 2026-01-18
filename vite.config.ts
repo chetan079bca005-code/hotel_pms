@@ -1,26 +1,52 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import path from 'path';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-  server: {
-    port: 3000,
-    strictPort: false, // Use next available port if 3000 is busy
-    open: true, // Auto-open browser
-    host: true, // Listen on all addresses including LAN
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'react-hook-form',
+      '@hookform/resolvers/zod',
+      'zod',
+      'zustand',
+      'i18next',
+      'react-i18next',
+      '@radix-ui/react-select',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-accordion',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-checkbox',
+      '@radix-ui/react-slot',
+    ],
   },
   build: {
-    outDir: 'dist',
-    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@radix-ui/react-select', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-accordion'],
+          forms: ['react-hook-form', '@hookform/resolvers/zod', 'zod'],
+          state: ['zustand', 'i18next', 'react-i18next'],
+        },
+      },
+    },
+    target: 'esnext',
+    minify: 'esbuild',
   },
-  css: {
-    postcss: './postcss.config.js',
+  server: {
+    warmup: {
+      clientFiles: ['./src/App.tsx', './src/main.tsx'],
+    },
   },
 });

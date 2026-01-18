@@ -1,12 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ClipboardList, AlertCircle, CheckCircle2, Clock, Filter, User, BedDouble } from 'lucide-react';
+import { ClipboardList, AlertCircle, CheckCircle2, Clock, Filter, User, BedDouble, LucideIcon } from 'lucide-react';
+import { mockHousekeepingStats, mockHousekeepingRooms } from '@/data/mockData';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 
 export default function HousekeepingDashboard() {
     const { toast } = useToast();
+
+    // Icon mapping
+    const iconMap: Record<string, LucideIcon> = {
+        'BedDouble': BedDouble,
+        'Clock': Clock,
+        'CheckCircle2': CheckCircle2,
+    };
 
     const handleAssignTasks = () => {
         toast({
@@ -56,37 +64,24 @@ export default function HousekeepingDashboard() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">To Clean</CardTitle>
-                        <BedDouble className="h-4 w-4 text-red-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">12</div>
-                        <Progress value={33} className="mt-2" />
-                        <p className="text-xs text-muted-foreground mt-2">4 high priority</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-                        <Clock className="h-4 w-4 text-blue-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">5</div>
-                        <p className="text-xs text-muted-foreground mt-2">AVG time: 25 mins</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Ready</CardTitle>
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">38</div>
-                        <p className="text-xs text-muted-foreground mt-2">Ready for check-in</p>
-                    </CardContent>
-                </Card>
+                {mockHousekeepingStats.map((stat) => {
+                    const Icon = iconMap[stat.iconName] || BedDouble;
+                    return (
+                        <Card key={stat.title}>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                                <Icon className={`h-4 w-4 ${stat.color}`} />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stat.value}</div>
+                                {stat.progress !== undefined && (
+                                    <Progress value={stat.progress} className="mt-2" />
+                                )}
+                                <p className="text-xs text-muted-foreground mt-2">{stat.subtext}</p>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
 
             <Card>
@@ -103,20 +98,7 @@ export default function HousekeepingDashboard() {
                 </CardHeader>
                 <CardContent>
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                        {[
-                            { number: '101', status: 'clean', assignee: '' },
-                            { number: '102', status: 'dirty', assignee: 'Jane' },
-                            { number: '103', status: 'cleaning', assignee: 'Sarah' },
-                            { number: '104', status: 'clean', assignee: '' },
-                            { number: '105', status: 'dirty', assignee: 'Jane' },
-                            { number: '201', status: 'maintenance', assignee: '' },
-                            { number: '202', status: 'clean', assignee: '' },
-                            { number: '203', status: 'cleaning', assignee: 'Mike' },
-                            { number: '204', status: 'dirty', assignee: 'Mike' },
-                            { number: '205', status: 'clean', assignee: '' },
-                            { number: '301', status: 'clean', assignee: '' },
-                            { number: '302', status: 'dirty', assignee: 'Sarah' },
-                        ].map((room) => (
+                        {mockHousekeepingRooms.map((room) => (
                             <div
                                 key={room.number}
                                 onClick={() => handleRoomClick(room.number)}

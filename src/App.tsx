@@ -10,7 +10,6 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 
 // Layouts - from layouts folder
-// Layouts - from layouts folder
 import AppLayout from '@/layouts/AppLayout';
 import SuperAdminLayout from '@/layouts/SuperAdminLayout';
 import MobileMenuLayout from '@/layouts/MobileMenuLayout';
@@ -21,7 +20,7 @@ import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
 
 // Restaurant/Menu Module Pages
-import MenuPage from '@/pages/menu/MenuPage';
+import PublicMenuPage from '@/pages/menu/PublicMenuPage';
 import CartPage from '@/pages/menu/CartPage';
 import MenuOrdersPage from '@/pages/menu/OrdersPage';
 import OrderTrackingPage from '@/pages/menu/OrderTrackingPage';
@@ -30,7 +29,7 @@ import OrderTrackingPage from '@/pages/menu/OrderTrackingPage';
 import AdminDashboardPage from '@/pages/dashboards/DashboardPage';
 import AdminBookingsPage from '@/pages/bookings/BookingsPage';
 import AdminRoomsPage from '@/pages/rooms/RoomsPage';
-import AdminMenuPage from '@/pages/menu/MenuPage'; // Note: MenuPage might be shared or duplicate? Admin uses same page? Check original
+import AdminMenuPage from '@/pages/menu/AdminMenuPage';
 import AdminOrdersPage from '@/pages/orders/OrdersPage';
 import AdminGuestsPage from '@/pages/guests/GuestsPage';
 import AdminHousekeepingPage from '@/pages/housekeeping/HousekeepingPage';
@@ -75,8 +74,8 @@ function App() {
           {/* ==================== Mobile Menu/Restaurant Routes ==================== */}
           <Route element={<MobileMenuLayout />}>
             {/* QR Code Menu Access */}
-            <Route path="/menu" element={<MenuPage />} />
-            <Route path="/menu/:hotelId" element={<MenuPage />} />
+            <Route path="/menu" element={<PublicMenuPage />} />
+            <Route path="/menu/:hotelId" element={<PublicMenuPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/orders" element={<MenuOrdersPage />} />
             <Route path="/order/:orderId/tracking" element={<OrderTrackingPage />} />
@@ -119,6 +118,7 @@ function App() {
           </Route>
 
           {/* ==================== Error Routes ==================== */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

@@ -3,8 +3,8 @@
  * Utility functions for formatting data for display
  */
 
-import { format, formatDistance, formatRelative, parseISO, isValid } from 'date-fns';
-import { DATE_DISPLAY_FORMAT, DATETIME_DISPLAY_FORMAT, DEFAULT_CURRENCY, CURRENCY_SYMBOL } from './constants';
+import { format, formatDistance, parseISO, isValid } from 'date-fns';
+import { DATE_DISPLAY_FORMAT, DATETIME_DISPLAY_FORMAT, DEFAULT_CURRENCY } from './constants';
 
 /**
  * Format a number as currency
@@ -24,12 +24,12 @@ export const formatCurrency = (
   });
 
   const formatted = formatter.format(amount);
-  
+
   if (showSymbol) {
     const symbol = getCurrencySymbol(currency);
     return `${symbol} ${formatted}`;
   }
-  
+
   return formatted;
 };
 
@@ -44,7 +44,7 @@ export const getCurrencySymbol = (currency: string): string => {
     INR: '₹',
     GBP: '£',
   };
-  
+
   return symbols[currency] || currency;
 };
 
@@ -58,12 +58,12 @@ export const formatDate = (
   formatStr: string = DATE_DISPLAY_FORMAT
 ): string => {
   if (!date) return '-';
-  
+
   try {
     const dateObj = typeof date === 'string' ? parseISO(date) : date;
-    
+
     if (!isValid(dateObj)) return '-';
-    
+
     return format(dateObj, formatStr);
   } catch {
     return '-';
@@ -86,7 +86,7 @@ export const formatDateTime = (
  */
 export const formatTime = (time: string | Date | null | undefined): string => {
   if (!time) return '-';
-  
+
   if (typeof time === 'string' && time.match(/^\d{2}:\d{2}$/)) {
     // Already in HH:mm format
     const [hours, minutes] = time.split(':');
@@ -95,7 +95,7 @@ export const formatTime = (time: string | Date | null | undefined): string => {
     const displayHour = hour % 12 || 12;
     return `${displayHour}:${minutes} ${ampm}`;
   }
-  
+
   return formatDate(time, 'h:mm a');
 };
 
@@ -106,12 +106,12 @@ export const formatRelativeTime = (
   date: string | Date | null | undefined
 ): string => {
   if (!date) return '-';
-  
+
   try {
     const dateObj = typeof date === 'string' ? parseISO(date) : date;
-    
+
     if (!isValid(dateObj)) return '-';
-    
+
     return formatDistance(dateObj, new Date(), { addSuffix: true });
   } catch {
     return '-';
@@ -124,20 +124,20 @@ export const formatRelativeTime = (
  */
 export const formatPhoneNumber = (phone: string | null | undefined): string => {
   if (!phone) return '-';
-  
+
   // Remove all non-digit characters
   const cleaned = phone.replace(/\D/g, '');
-  
+
   // Format for Nepal numbers (10 digits)
   if (cleaned.length === 10) {
     return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
   }
-  
+
   // Format with country code
   if (cleaned.length === 13 && cleaned.startsWith('977')) {
     return `+977 ${cleaned.slice(3, 6)}-${cleaned.slice(6, 9)}-${cleaned.slice(9)}`;
   }
-  
+
   return phone;
 };
 
@@ -161,11 +161,11 @@ export const formatPercentage = (
  */
 export const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 };
 
@@ -177,14 +177,14 @@ export const formatDuration = (minutes: number): string => {
   if (minutes < 60) {
     return `${minutes} min`;
   }
-  
+
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  
+
   if (mins === 0) {
     return `${hours} hr`;
   }
-  
+
   return `${hours} hr ${mins} min`;
 };
 
@@ -203,15 +203,15 @@ export const formatNights = (nights: number): string => {
  */
 export const formatGuestCount = (adults: number, children: number = 0): string => {
   const parts: string[] = [];
-  
+
   if (adults > 0) {
     parts.push(adults === 1 ? '1 adult' : `${adults} adults`);
   }
-  
+
   if (children > 0) {
     parts.push(children === 1 ? '1 child' : `${children} children`);
   }
-  
+
   return parts.join(', ') || '0 guests';
 };
 
@@ -254,7 +254,7 @@ export const formatRating = (rating: number, maxRating: number = 5): string => {
  */
 export const formatName = (name: string | null | undefined): string => {
   if (!name) return '-';
-  
+
   return name
     .split(' ')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
@@ -271,9 +271,9 @@ export const truncateText = (
   maxLength: number
 ): string => {
   if (!text) return '';
-  
+
   if (text.length <= maxLength) return text;
-  
+
   return `${text.slice(0, maxLength)}...`;
 };
 
@@ -288,14 +288,14 @@ export const formatAddress = (address: {
   zipCode?: string;
 } | null | undefined): string => {
   if (!address) return '-';
-  
+
   const parts = [
     address.street,
     address.city,
     address.state,
     address.country,
   ].filter(Boolean);
-  
+
   return parts.join(', ') || '-';
 };
 

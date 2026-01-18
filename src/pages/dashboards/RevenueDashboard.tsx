@@ -1,11 +1,20 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { DollarSign, TrendingUp, BarChart, Calendar, ArrowUpRight, ArrowDownRight, CreditCard, Users } from 'lucide-react';
+import { DollarSign, TrendingUp, BarChart, Calendar, ArrowUpRight, ArrowDownRight, CreditCard, Users, LucideIcon } from 'lucide-react';
+import { mockRevenueStats, mockRevenueOverview, mockRecentTransactions } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 
 export default function RevenueDashboard() {
     const { toast } = useToast();
+
+    // Icon mapping
+    const iconMap: Record<string, LucideIcon> = {
+        'DollarSign': DollarSign,
+        'TrendingUp': TrendingUp,
+        'BarChart': BarChart,
+        'Users': Users,
+    };
 
     const handleExport = () => {
         toast({
@@ -40,58 +49,29 @@ export default function RevenueDashboard() {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">$12,345</div>
-                        <div className="flex items-center text-xs text-green-500 mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
-                            +15% from last month
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">RevPAR</CardTitle>
-                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">$85.00</div>
-                        <div className="flex items-center text-xs text-green-500 mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
-                            +5% vs target
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">ADR</CardTitle>
-                        <BarChart className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">$105.00</div>
-                        <div className="flex items-center text-xs text-red-500 mt-1">
-                            <ArrowDownRight className="h-3 w-3 mr-1" />
-                            -2% vs last week
-                        </div>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Occupancy</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">82%</div>
-                        <div className="flex items-center text-xs text-green-500 mt-1">
-                            <ArrowUpRight className="h-3 w-3 mr-1" />
-                            +12% yoy
-                        </div>
-                    </CardContent>
-                </Card>
+                {mockRevenueStats.map((stat) => {
+                    const Icon = iconMap[stat.iconName] || DollarSign;
+                    const isPositive = stat.changeType === 'positive';
+                    return (
+                        <Card key={stat.title}>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                                <Icon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stat.value}</div>
+                                <div className={`flex items-center text-xs ${isPositive ? 'text-green-500' : 'text-red-500'} mt-1`}>
+                                    {isPositive ? (
+                                        <ArrowUpRight className="h-3 w-3 mr-1" />
+                                    ) : (
+                                        <ArrowDownRight className="h-3 w-3 mr-1" />
+                                    )}
+                                    {stat.change} {stat.subtext}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -102,18 +82,18 @@ export default function RevenueDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="h-[300px] w-full bg-muted/10 rounded-lg flex items-end justify-between p-4 gap-2">
-                            {/* Fake Chart Bars */}
-                            {[40, 60, 45, 70, 80, 55, 65, 85, 90, 75, 60, 95].map((h, i) => (
-                                <div key={i} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer" onClick={() => toast({ title: `Revenue for ${['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][i]}`, description: `$${h},000 generated.` })}>
+                            {/* Chart Bars from Mock Data */}
+                            {mockRevenueOverview.map((item, i) => (
+                                <div key={i} className="flex-1 flex flex-col items-center gap-2 group cursor-pointer" onClick={() => toast({ title: `Revenue for ${item.month}`, description: `$${item.value},000 generated.` })}>
                                     <div
                                         className="w-full bg-primary/20 group-hover:bg-primary transition-all rounded-t-sm relative"
-                                        style={{ height: `${h}%` }}
+                                        style={{ height: `${item.value}%` }}
                                     >
                                         <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
-                                            ${h}k
+                                            ${item.value}k
                                         </div>
                                     </div>
-                                    <span className="text-[10px] text-muted-foreground">{['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'][i]}</span>
+                                    <span className="text-[10px] text-muted-foreground">{item.month}</span>
                                 </div>
                             ))}
                         </div>
@@ -127,20 +107,20 @@ export default function RevenueDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {[1, 2, 3, 4, 5].map((i) => (
-                                <div key={i} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg transition-colors cursor-pointer" onClick={() => toast({ title: "Transaction Details", description: `Transaction ID: #TXN-20${i}` })}>
+                            {mockRecentTransactions.map((item) => (
+                                <div key={item.id} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg transition-colors cursor-pointer" onClick={() => toast({ title: "Transaction Details", description: `Transaction ID: #TXN-20${item.id}` })}>
                                     <div className="flex items-center gap-3">
                                         <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                                             <CreditCard className="h-4 w-4 text-primary" />
                                         </div>
                                         <div>
-                                            <p className="text-sm font-medium">Guest #10{i}</p>
-                                            <p className="text-xs text-muted-foreground">Room 20{i}</p>
+                                            <p className="text-sm font-medium">{item.guest}</p>
+                                            <p className="text-xs text-muted-foreground">{item.room}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm font-bold">+$120.00</p>
-                                        <p className="text-[10px] text-muted-foreground">Credit Card</p>
+                                        <p className="text-sm font-bold">{item.amount}</p>
+                                        <p className="text-[10px] text-muted-foreground">{item.method}</p>
                                     </div>
                                 </div>
                             ))}

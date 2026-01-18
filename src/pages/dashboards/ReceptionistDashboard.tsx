@@ -1,6 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarCheck, Users, BedDouble, LogOut, Clock, Search, Filter, Phone, Mail, Plus } from 'lucide-react';
+import { CalendarCheck, Users, BedDouble, LogOut, Clock, Search, Filter, Phone, Mail, Plus, LucideIcon } from 'lucide-react';
+import {
+    mockReceptionistStats,
+    mockGuestActivity,
+    mockFrontDeskRequests,
+    mockShiftNotes
+} from '@/data/mockData';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -10,6 +16,17 @@ import { useToast } from '@/hooks/use-toast';
 
 export default function ReceptionistDashboard() {
     const { toast } = useToast();
+
+    // Icon mapping
+    const iconMap: Record<string, LucideIcon> = {
+        'Users': Users,
+        'LogOut': LogOut,
+        'BedDouble': BedDouble,
+        'Search': Search,
+        'Clock': Clock,
+        'Phone': Phone,
+        'Mail': Mail,
+    };
 
     const today = new Date().toLocaleDateString('en-US', {
         weekday: 'long',
@@ -55,46 +72,21 @@ export default function ReceptionistDashboard() {
 
             {/* Guest-Facing Stats */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Arrivals Today</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">12</div>
-                        <p className="text-xs text-muted-foreground">4 checked in</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Departures</CardTitle>
-                        <LogOut className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">8</div>
-                        <p className="text-xs text-muted-foreground">2 checked out</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">In House</CardTitle>
-                        <BedDouble className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">45</div>
-                        <p className="text-xs text-muted-foreground">85% occupancy</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Available Rooms</CardTitle>
-                        <Search className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">5</div>
-                        <p className="text-xs text-muted-foreground">Clean & Ready</p>
-                    </CardContent>
-                </Card>
+                {mockReceptionistStats.map((stat) => {
+                    const Icon = iconMap[stat.iconName] || Users;
+                    return (
+                        <Card key={stat.title}>
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                                <Icon className="h-4 w-4 text-muted-foreground" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">{stat.value}</div>
+                                <p className="text-xs text-muted-foreground">{stat.subtext}</p>
+                            </CardContent>
+                        </Card>
+                    );
+                })}
             </div>
 
             <div className="grid gap-6 md:grid-cols-7">
@@ -116,33 +108,33 @@ export default function ReceptionistDashboard() {
                         <CardContent>
                             <Tabs defaultValue="arrivals" className="w-full">
                                 <TabsList>
-                                    <TabsTrigger value="arrivals">Arrivals (12)</TabsTrigger>
-                                    <TabsTrigger value="departures">Departures (8)</TabsTrigger>
+                                    <TabsTrigger value="arrivals">Arrivals ({mockGuestActivity.arrivals.length})</TabsTrigger>
+                                    <TabsTrigger value="departures">Departures ({mockGuestActivity.departures.length})</TabsTrigger>
                                     <TabsTrigger value="inhouse">In House (45)</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="arrivals" className="mt-4">
                                     <div className="space-y-4">
-                                        {[1, 2, 3, 4].map((i) => (
-                                            <div key={i} className="flex items-center justify-between p-4 border rounded-lg bg-card hover:bg-muted/50 transition-colors">
+                                        {mockGuestActivity.arrivals.map((guest) => (
+                                            <div key={guest.id} className="flex items-center justify-between p-4 border rounded-lg bg-card hover:bg-muted/50 transition-colors">
                                                 <div className="flex items-center gap-4">
                                                     <Avatar>
-                                                        <AvatarFallback>JD</AvatarFallback>
+                                                        <AvatarFallback>{guest.guest.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                                                     </Avatar>
                                                     <div>
-                                                        <p className="font-medium">John Doe</p>
+                                                        <p className="font-medium">{guest.guest}</p>
                                                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                            <Badge variant="outline">Room 10{i}</Badge>
+                                                            <Badge variant="outline">Room {guest.room}</Badge>
                                                             <span>•</span>
-                                                            <span>2 Adults</span>
+                                                            <span>{guest.pax}</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <div className="text-right">
-                                                        <p className="text-sm font-medium">Booked via Booking.com</p>
-                                                        <p className="text-xs text-muted-foreground">Paid</p>
+                                                        <p className="text-sm font-medium">Booked via {guest.source}</p>
+                                                        <p className="text-xs text-muted-foreground">{guest.status}</p>
                                                     </div>
-                                                    <Button size="sm" onClick={() => handleAction('Check In', 'John Doe')}>Check In</Button>
+                                                    <Button size="sm" onClick={() => handleAction('Check In', guest.guest)}>Check In</Button>
                                                 </div>
                                             </div>
                                         ))}
@@ -170,27 +162,18 @@ export default function ReceptionistDashboard() {
                             <CardTitle className="text-base">Front Desk Requests</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex items-start gap-3 pb-3 border-b">
-                                <Clock className="h-4 w-4 text-orange-500 mt-1" />
-                                <div>
-                                    <p className="text-sm font-medium">Wake up call</p>
-                                    <p className="text-xs text-muted-foreground">Room 204 • 6:00 AM</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3 pb-3 border-b">
-                                <Phone className="h-4 w-4 text-blue-500 mt-1" />
-                                <div>
-                                    <p className="text-sm font-medium">Taxi to Airport</p>
-                                    <p className="text-xs text-muted-foreground">Room 305 • 10:30 AM</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-3">
-                                <Mail className="h-4 w-4 text-green-500 mt-1" />
-                                <div>
-                                    <p className="text-sm font-medium">Extra Towels</p>
-                                    <p className="text-xs text-muted-foreground">Room 102 • Just now</p>
-                                </div>
-                            </div>
+                            {mockFrontDeskRequests.map((request, idx) => {
+                                const Icon = iconMap[request.iconName] || Clock;
+                                return (
+                                    <div key={idx} className="flex items-start gap-3 pb-3 border-b last:border-0 last:pb-0">
+                                        <Icon className={`h-4 w-4 ${request.color} mt-1`} />
+                                        <div>
+                                            <p className="text-sm font-medium">{request.type}</p>
+                                            <p className="text-xs text-muted-foreground">Room {request.room} • {request.time}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </CardContent>
                     </Card>
 
@@ -199,10 +182,8 @@ export default function ReceptionistDashboard() {
                             <CardTitle className="text-base font-semibold">Shift Notes</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="text-sm text-muted-foreground leading-relaxed">
-                                Room 201 VIP guest arriving at 2 PM. Please ensure amenities are placed.
-                                <br /><br />
-                                Night audit needs to run at 11 PM.
+                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                                {mockShiftNotes}
                             </p>
                         </CardContent>
                     </Card>

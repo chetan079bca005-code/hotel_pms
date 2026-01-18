@@ -12,19 +12,20 @@ import { cn } from '@/lib/utils';
 // Button variants using CVA
 const buttonVariants = cva(
   // Base styles
-  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
-      // Visual variants
+      // Visual variants - Brand Colors: Navy Blue (#002366), Gold (#D4AF37), White (#FFFFFF)
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+        default: 'bg-[#002366] text-white hover:bg-[#D4AF37] hover:text-[#002366] active:bg-[#B8960C] active:text-[#002366]',
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
-        success: 'bg-green-600 text-white hover:bg-green-700',
-        warning: 'bg-yellow-500 text-white hover:bg-yellow-600',
+        outline: 'border border-[#002366] bg-background text-[#002366] hover:bg-[#D4AF37] hover:text-[#002366] hover:border-[#D4AF37]',
+        secondary: 'bg-[#D4AF37] text-[#002366] hover:bg-[#002366] hover:text-white',
+        ghost: 'hover:bg-[#002366]/10 hover:text-[#002366] dark:hover:bg-[#D4AF37]/20 dark:hover:text-[#D4AF37]',
+        link: 'text-[#002366] underline-offset-4 hover:underline hover:text-[#D4AF37] dark:text-[#D4AF37]',
+        // Strict Palette Mapping
+        success: 'bg-[#002366] text-white hover:bg-[#D4AF37] hover:text-[#002366]', // Navy Blue with Gold hover
+        warning: 'bg-[#D4AF37] text-[#002366] hover:bg-[#B8960C]', // Gold
       },
       // Size variants
       size: {
@@ -47,7 +48,7 @@ const buttonVariants = cva(
 // Button props interface
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   isLoading?: boolean;
   loading?: boolean; // Alias for isLoading
@@ -95,17 +96,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {showLoading && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
             )}
-            
+
             {/* Left icon */}
             {!showLoading && leftIcon && (
               <span className="mr-2" aria-hidden="true">
                 {leftIcon}
               </span>
             )}
-            
+
             {/* Button content */}
             {children}
-            
+
             {/* Right icon */}
             {rightIcon && (
               <span className="ml-2" aria-hidden="true">

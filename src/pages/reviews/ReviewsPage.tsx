@@ -54,31 +54,12 @@ import { Progress } from '@/components/ui/progress';
 import { PageHeader, EmptyState } from '@/components/common';
 import { useDebounce } from '@/hooks/useDebounce';
 import { cn } from '@/lib/utils';
+import {
+  mockReviews,
+  Review,
+  ReviewCategory
+} from '@/data/mockData';
 
-/**
- * Review category type
- */
-type ReviewCategory = 'room' | 'restaurant' | 'service' | 'amenities';
-
-/**
- * Review interface
- */
-interface Review {
-  id: string;
-  guestName: string;
-  guestEmail: string;
-  category: ReviewCategory;
-  rating: number;
-  title: string;
-  content: string;
-  response?: string;
-  responseDate?: string;
-  roomNumber?: string;
-  orderNumber?: string;
-  isVerified: boolean;
-  isFlagged: boolean;
-  createdAt: string;
-}
 
 /**
  * Category config
@@ -90,88 +71,7 @@ const categoryConfig: Record<ReviewCategory, { label: string; color: string }> =
   amenities: { label: 'Amenities', color: 'bg-yellow-100 text-yellow-700' },
 };
 
-/**
- * Mock reviews data
- */
-const reviewsData: Review[] = [
-  {
-    id: '1',
-    guestName: 'Ramesh Sharma',
-    guestEmail: 'ramesh@example.com',
-    category: 'room',
-    rating: 5,
-    title: 'Excellent stay!',
-    content: 'The room was spotless, the view was amazing, and the staff was incredibly helpful. Will definitely come back!',
-    response: 'Thank you for your wonderful review! We look forward to welcoming you again.',
-    responseDate: '2024-01-18',
-    roomNumber: '305',
-    isVerified: true,
-    isFlagged: false,
-    createdAt: '2024-01-17',
-  },
-  {
-    id: '2',
-    guestName: 'Sarah Johnson',
-    guestEmail: 'sarah@example.com',
-    category: 'restaurant',
-    rating: 4,
-    title: 'Great food, slow service',
-    content: 'The food quality was excellent - especially the butter chicken. However, the room service was a bit slow during peak hours.',
-    isVerified: true,
-    isFlagged: false,
-    createdAt: '2024-01-16',
-  },
-  {
-    id: '3',
-    guestName: 'Priya Patel',
-    guestEmail: 'priya@example.com',
-    category: 'service',
-    rating: 5,
-    title: 'Outstanding staff',
-    content: 'The concierge helped us arrange a last-minute tour and the front desk staff were always smiling. Top notch service!',
-    response: 'Thank you so much for your kind words! We will share this with our team.',
-    responseDate: '2024-01-16',
-    isVerified: true,
-    isFlagged: false,
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '4',
-    guestName: 'John Smith',
-    guestEmail: 'john@example.com',
-    category: 'room',
-    rating: 2,
-    title: 'Noisy room',
-    content: 'The room was nice but very noisy due to construction nearby. Couldn\'t sleep well. Expected better soundproofing.',
-    isVerified: true,
-    isFlagged: false,
-    createdAt: '2024-01-14',
-  },
-  {
-    id: '5',
-    guestName: 'Emma Brown',
-    guestEmail: 'emma@example.com',
-    category: 'amenities',
-    rating: 4,
-    title: 'Nice pool, outdated gym',
-    content: 'The swimming pool area is beautiful and well-maintained. However, the gym equipment could use an upgrade.',
-    isVerified: true,
-    isFlagged: false,
-    createdAt: '2024-01-13',
-  },
-  {
-    id: '6',
-    guestName: 'Anonymous',
-    guestEmail: '',
-    category: 'restaurant',
-    rating: 1,
-    title: 'Terrible experience',
-    content: 'Found hair in my food. Very disappointing and unhygienic!',
-    isVerified: false,
-    isFlagged: true,
-    createdAt: '2024-01-12',
-  },
-];
+const reviewsData = mockReviews;
 
 /**
  * Rating distribution
@@ -194,9 +94,9 @@ export default function AdminReviewsPage() {
   const [categoryFilter, setCategoryFilter] = React.useState<string>('all');
   const [selectedReview, setSelectedReview] = React.useState<Review | null>(null);
   const [responseText, setResponseText] = React.useState('');
-  
+
   const debouncedSearch = useDebounce(searchQuery, 300);
-  
+
   // Filter reviews
   const filteredReviews = React.useMemo(() => {
     return reviewsData.filter((review) => {
@@ -210,25 +110,25 @@ export default function AdminReviewsPage() {
           return false;
         }
       }
-      
+
       if (ratingFilter !== 'all' && review.rating !== parseInt(ratingFilter)) {
         return false;
       }
-      
+
       if (categoryFilter !== 'all' && review.category !== categoryFilter) {
         return false;
       }
-      
+
       return true;
     });
   }, [debouncedSearch, ratingFilter, categoryFilter]);
-  
+
   // Stats
   const totalReviews = reviewsData.length;
   const avgRating = (reviewsData.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1);
   const pendingResponses = reviewsData.filter((r) => !r.response).length;
   const flaggedReviews = reviewsData.filter((r) => r.isFlagged).length;
-  
+
   // Render stars
   const renderStars = (rating: number, size: 'sm' | 'md' = 'sm') => {
     const sizeClass = size === 'sm' ? 'h-4 w-4' : 'h-5 w-5';
@@ -246,7 +146,7 @@ export default function AdminReviewsPage() {
       </div>
     );
   };
-  
+
   // Format date
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -293,7 +193,7 @@ export default function AdminReviewsPage() {
             </Badge>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -311,7 +211,7 @@ export default function AdminReviewsPage() {
             </Badge>
           </CardContent>
         </Card>
-        
+
         <Card className={cn(pendingResponses > 0 && 'border-yellow-200 bg-yellow-50/50')}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -330,7 +230,7 @@ export default function AdminReviewsPage() {
             )}
           </CardContent>
         </Card>
-        
+
         <Card className={cn(flaggedReviews > 0 && 'border-red-200 bg-red-50/50')}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -489,12 +389,12 @@ export default function AdminReviewsPage() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                  
+
                   <h4 className="font-medium mb-1">{review.title}</h4>
                   <p className="text-sm text-muted-foreground line-clamp-2">
                     {review.content}
                   </p>
-                  
+
                   {review.response && (
                     <div className="mt-3 p-3 bg-primary/5 rounded-lg border-l-4 border-primary">
                       <p className="text-xs text-muted-foreground mb-1">
@@ -503,7 +403,7 @@ export default function AdminReviewsPage() {
                       <p className="text-sm">{review.response}</p>
                     </div>
                   )}
-                  
+
                   {!review.response && (
                     <Button
                       variant="ghost"
@@ -533,7 +433,7 @@ export default function AdminReviewsPage() {
                   {selectedReview.guestName} • {formatDate(selectedReview.createdAt)}
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="space-y-4">
                 {/* Rating & Category */}
                 <div className="flex items-center gap-4">
@@ -548,13 +448,13 @@ export default function AdminReviewsPage() {
                     <Badge variant="secondary">Verified Stay</Badge>
                   )}
                 </div>
-                
+
                 {/* Review Content */}
                 <div>
                   <h4 className="font-semibold mb-2">{selectedReview.title}</h4>
                   <p className="text-muted-foreground">{selectedReview.content}</p>
                 </div>
-                
+
                 {/* Existing Response */}
                 {selectedReview.response ? (
                   <div className="p-4 bg-primary/5 rounded-lg border-l-4 border-primary">

@@ -4,6 +4,7 @@
  */
 
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Building2,
   Users,
@@ -44,7 +45,8 @@ import { hotelDataService, activityDataService } from '@/services/dataService';
  */
 export default function SuperAdminOverviewPage() {
   const { toast } = useToast();
-  
+  const navigate = useNavigate();
+
   // State for data
   const [hotelsData, setHotelsData] = React.useState<HotelPerformance[]>(mockHotelPerformance);
   const [activities, setActivities] = React.useState<RecentActivity[]>(mockRecentActivities);
@@ -60,11 +62,11 @@ export default function SuperAdminOverviewPage() {
         activityDataService.getRecentActivities(),
         hotelDataService.getPortfolioStats(),
       ]);
-      
+
       setHotelsData(performance);
       setActivities(recentActivities);
       setStats(portfolioStats);
-      
+
       toast({
         title: 'Data Refreshed',
         description: 'Dashboard data has been updated.',
@@ -99,7 +101,7 @@ export default function SuperAdminOverviewPage() {
               <RefreshCw className={cn("h-4 w-4 mr-2", isLoading && "animate-spin")} />
               Refresh
             </Button>
-            <Button>
+            <Button onClick={() => navigate('/superadmin/hotels')}>
               <Building2 className="h-4 w-4 mr-2" />
               Add Property
             </Button>
@@ -129,7 +131,7 @@ export default function SuperAdminOverviewPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -151,7 +153,7 @@ export default function SuperAdminOverviewPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -172,7 +174,7 @@ export default function SuperAdminOverviewPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="hover:shadow-md transition-shadow">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -193,7 +195,7 @@ export default function SuperAdminOverviewPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className={cn(
           "hover:shadow-md transition-shadow",
           stats.totalAlerts > 0 && 'border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/10'
@@ -267,7 +269,7 @@ export default function SuperAdminOverviewPage() {
                       {hotelStatusConfig[hotel.status].label}
                     </Badge>
                   </div>
-                  
+
                   {hotel.status === 'active' && (
                     <div className="grid grid-cols-4 gap-4">
                       <div>
@@ -296,14 +298,14 @@ export default function SuperAdminOverviewPage() {
                       </div>
                     </div>
                   )}
-                  
+
                   {hotel.status === 'maintenance' && (
                     <p className="text-sm text-yellow-700 dark:text-yellow-400">
                       Property is under maintenance. No active bookings.
                     </p>
                   )}
-                  
-                  <Button variant="ghost" size="sm" className="mt-3">
+
+                  <Button variant="ghost" size="sm" className="mt-3" onClick={() => navigate('/superadmin/hotels')}>
                     View Dashboard
                     <ArrowUpRight className="h-4 w-4 ml-1" />
                   </Button>
@@ -329,7 +331,7 @@ export default function SuperAdminOverviewPage() {
                 activities.map((activity) => (
                   <div key={activity.id} className="flex items-start gap-3">
                     <div className={cn(
-                      'h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0',
+                      'h-8 w-8 rounded-full flex items-center justify-center shrink-0',
                       activity.type === 'booking' && 'bg-blue-100 dark:bg-blue-900/30',
                       activity.type === 'alert' && 'bg-red-100 dark:bg-red-900/30',
                       activity.type === 'revenue' && 'bg-green-100 dark:bg-green-900/30',
@@ -353,8 +355,8 @@ export default function SuperAdminOverviewPage() {
                 ))
               )}
             </div>
-            
-            <Button variant="ghost" className="w-full mt-4">
+
+            <Button variant="ghost" className="w-full mt-4" onClick={() => navigate('/superadmin/logs')}>
               View All Activity
             </Button>
           </CardContent>
